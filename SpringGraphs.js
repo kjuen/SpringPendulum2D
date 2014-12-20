@@ -278,9 +278,9 @@ $("#freqDomainPhaseGraph").hide();
 
 //* Pole zero map
 var poleZeroGraphBoard = JXG.JSXGraph.initBoard('poleZeroGraph',
-                                                {boundingbox:[-3, 3, 3, -3],
-                                                 keepaspectratio: true,
-                                                 axis: false,
+                                                {boundingbox:[-3, 3, 1, -3],
+                                                 keepaspectratio: false,
+                                                 axis: true,
                                                  grid: true,
                                                  pan: {
                                                      needShift: false,
@@ -329,9 +329,11 @@ var poleZeroPole2 = poleZeroGraphBoard.create('point',
 
 //* Rendering
 
-function updateSpringDynamics() {
+function updateGraphs() {
+
+    if($(timeDomainGraphBoard.containerObj).is(":hidden") === false)
     timeDomainGraph.Y = springDyn.positionFunc;
-    timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
+    //timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
     if(ProgState.timeDomainTrace) {
         timeDomainGlider.visible(true);
         timeDomainExtForceGlider.visible(true);
@@ -369,19 +371,23 @@ function updateSpringDynamics() {
         freqDomainPhaseGraph.Y = springDyn.phaseResp;
         freqDomainPhaseGraph.updateCurve();
         freqDomainPhaseGraphBoard.update();
-        freqDomainPhasePointExtFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(springDyn.we),
-                                                                    freqDomainPhaseGraph.Y(springDyn.we)]);
-        freqDomainPhasePointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(springDyn.w0),
-                                                                      freqDomainPhaseGraph.Y(springDyn.w0)]);
+        freqDomainPhasePointExtFreq.setPosition(JXG.COORDS_BY_USER,
+                                                [Math.LOG10E*Math.log(springDyn.we),
+                                                 freqDomainPhaseGraph.Y(springDyn.we)]);
+        freqDomainPhasePointEigenFreq.setPosition(JXG.COORDS_BY_USER,
+                                                  [Math.LOG10E*Math.log(springDyn.w0),
+                                                   freqDomainPhaseGraph.Y(springDyn.w0)]);
     }
+    else if($(poleZeroGraphBoard.containerObj).is(":hidden") === false) {
+        // FIXME: Das hier sollte doch nur ausgeführt werden, wenn der Plot aktiv ist!!
+        poleZeroPole1.setPosition(JXG.COORDS_BY_USER , springDyn.poles[0]);
+        poleZeroPole2.setPosition(JXG.COORDS_BY_USER , springDyn.poles[1]);
+        poleZeroGraphBoard.update();
 
-    // FIXME: Das hier sollte doch nur ausgeführt werden, wenn der Plot aktiv ist!!
-    poleZeroPole1.setPosition(JXG.COORDS_BY_USER , springDyn.poles[0]);
-    poleZeroPole2.setPosition(JXG.COORDS_BY_USER , springDyn.poles[1]);
-    poleZeroGraphBoard.update();
-
-    poleZeroGraphBoard.zoomElements([poleZeroPole1, poleZeroPole2]);
-    poleZeroGraphBoard.moveOrigin(poleZeroGraphBoard.origin.scrCoords[1], poleZeroGraphBoard.canvasHeight / 2);
+        // poleZeroGraphBoard.zoomElements([poleZeroPole1, poleZeroPole2]);
+        // poleZeroGraphBoard.moveOrigin(poleZeroGraphBoard.origin.scrCoords[1],
+        //                               poleZeroGraphBoard.canvasHeight / 2);
+    }
 
 }
 

@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * This object represents the dynamics of an ideal spring.
  * The methods of this object create functions (closures) of t implementing the different
@@ -15,9 +13,8 @@
  * @param {number} we external frequency (default: 0)
  */
 function SpringDynamics(_w0, _d, _y0, _v0, _u0, _we) {
-    if(!(this instanceof SpringDynamics)) {
-        return new SpringDynamics(_w0, _d, _y0, _v0, _u0, _we);
-    }
+    "use strict";
+
     // set default values
     _y0 = (_y0 === undefined ? 0 : _y0);
     _v0 = (_v0 === undefined ? 0 : _v0);

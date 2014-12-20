@@ -105,7 +105,7 @@ $(function() {
 
                 $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","min"));
             }
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#eigenfrequency").val($("#eigenfrequency-slider").slider("value"));
@@ -118,7 +118,7 @@ $(function() {
         slide: function( event, ui ) {
             $("#damping").val(ui.value);
             springDyn.d = ui.value;
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#damping").val($("#damping-slider").slider("value"));
@@ -131,7 +131,7 @@ $(function() {
         slide: function( event, ui ) {
             $("#initpos").val(ui.value);
             springDyn.y0 = ui.value;
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#initpos").val($("#initpos-slider").slider("value"));
@@ -144,7 +144,7 @@ $(function() {
         slide: function( event, ui ) {
             $("#initveloc").val(ui.value);
             springDyn.v0 = ui.value;
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#initveloc").val($("#initveloc-slider").slider("value"));
@@ -157,7 +157,7 @@ $(function() {
         slide: function( event, ui ) {
             $("#extforce-amp").val(ui.value);
             springDyn.u0 = ui.value;
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#extforce-amp").val($("#extforce-amp-slider").slider("value"));
@@ -170,7 +170,7 @@ $(function() {
         slide: function( event, ui ) {
             $("#extforce-freq").val(ui.value);
             springDyn.we = ui.value;
-            updateSpringDynamics();
+            updateGraphs();
         }
     });
     $("#extforce-freq").val($("#extforce-freq-slider").slider("value"));
@@ -180,14 +180,14 @@ $(function() {
         $("#freqdomain-mag-db").button("enable");
         $("#freqDomainPhaseGraph").hide();
         $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ? "Db" : "")+"Graph").show();
-        updateSpringDynamics();
+        updateGraphs();
    });
     $("#freqdomain-phase").click(function() {
         $("#freqdomain-mag-db").button("disable");
         $("#freqDomainMagGraph").hide();
         $("#freqDomainMagDbGraph").hide();
         $("#freqDomainPhaseGraph").show();
-        updateSpringDynamics();
+        updateGraphs();
     });
     $("#freqdomain-mag-db").button().click(function() {
         if ($(this).prop("checked") === true) {
@@ -197,7 +197,7 @@ $(function() {
             $("#freqDomainMagDbGraph").hide();
             $("#freqDomainMagGraph").show();
         }
-        updateSpringDynamics();
+        updateGraphs();
     });
 
     // $("#timedomain-trace").prop("checked") = true;
