@@ -1,4 +1,3 @@
-
 // --- Definition of constants and program state ---
 
 // State of the program
@@ -7,8 +6,6 @@ var ProgState = {
     startTime : undefined,
     timeDomainTrace : true   // Trace button in Spring window
 };
-
-
 
 // Spring constants: mainly used for drawing the spring.
 var SpringConsts = {
@@ -27,7 +24,6 @@ var SpringConsts = {
     ceilWidth : 400,
     yMount : 120
 };
-
 
 // create SpringDynamics object with useful default parameters
 var springDyn = new SpringDynamics(
