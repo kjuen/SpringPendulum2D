@@ -9,7 +9,6 @@ var timeDomainGraphBoard = JXG.JSXGraph.initBoard('timeDomainGraph',
                                                    grid: false,
                                                    pan: {
                                                        needShift: false,
-                                                       needTwoFingers: true,
                                                        enabled: true
                                                    },
                                                    showCopyright: false,
@@ -79,7 +78,6 @@ var freqDomainMagGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagGraph',
                                                       grid: true,
                                                       pan: {
                                                           needShift: false,
-                                                          needTwoFingers: true,
                                                           enabled: true
                                                       },
                                                       showCopyright: false,
@@ -168,13 +166,12 @@ function createLogXTicks(graph) {
 
 //** Magnitude plot (log-scale)
 var freqDomainMagDbGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagDbGraph',
-                                                       {boundingbox:[-1, 50, 2, -50],
+                                                       {boundingbox:[-1, 25, 2, -50],
                                                         keepaspectratio: false,
                                                         //axis: true,
                                                         //grid: true,
                                                         pan: {
                                                             needShift: false,
-                                                            needTwoFingers: true,
                                                             enabled: true
                                                         },
                                                         showCopyright: false,
@@ -233,7 +230,6 @@ var freqDomainPhaseGraphBoard = JXG.JSXGraph.initBoard('freqDomainPhaseGraph',
                                                         // grid: false,
                                                         pan: {
                                                             needShift: false,
-                                                            needTwoFingers: true,
                                                             enabled: true
                                                         },
                                                         showCopyright: false,
@@ -284,7 +280,6 @@ var poleZeroGraphBoard = JXG.JSXGraph.initBoard('poleZeroGraph',
                                                  grid: true,
                                                  pan: {
                                                      needShift: false,
-                                                     needTwoFingers: true,
                                                      enabled: true
                                                  },
                                                  showCopyright: false,
@@ -327,26 +322,32 @@ var poleZeroPole2 = poleZeroGraphBoard.create('point',
                                                   name: "2"
                                               });
 
-//* Rendering
+//* Graph update
 
-function updateGraphs() {
+/**
+ * updates graphs, by default only when they are active
+ * @param{boolean} force also update hidden panels (default false)
+ */
+function updateGraphs(force) {
 
-    if($(timeDomainGraphBoard.containerObj).is(":hidden") === false)
-    timeDomainGraph.Y = springDyn.positionFunc;
-    //timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
-    if(ProgState.timeDomainTrace) {
-        timeDomainGlider.visible(true);
-        timeDomainExtForceGlider.visible(true);
-        timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[0,springDyn.positionFunc(0)]);
-        timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[0,0]);
-    } else {
-        timeDomainGlider.visible(false);
-        timeDomainExtForceGlider.visible(false);
+    force = (force === undefined ? false : force);
+
+    if(force || $(timeDomainGraphBoard.containerObj).is(":hidden") === false) {
+        timeDomainGraph.Y = springDyn.positionFunc;
+        //timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
+        if(ProgState.timeDomainTrace) {
+            timeDomainGlider.visible(true);
+            timeDomainExtForceGlider.visible(true);
+            timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[0,springDyn.positionFunc(0)]);
+            timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[0,0]);
+        } else {
+            timeDomainGlider.visible(false);
+            timeDomainExtForceGlider.visible(false);
+        }
+        timeDomainGraphBoard.fullUpdate();
     }
-    timeDomainGraphBoard.fullUpdate();
 
-
-    if($(freqDomainMagGraphBoard.containerObj).is(":hidden") === false)
+    if(force || $(freqDomainMagGraphBoard.containerObj).is(":hidden") === false)
     {
         freqDomainMagGraph.Y = springDyn.magResp;
         freqDomainMagGraph.updateCurve();
@@ -355,8 +356,9 @@ function updateGraphs() {
                                                                   freqDomainMagGraph.Y(springDyn.we)]);
         freqDomainMagPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[springDyn.w0,
                                                                     freqDomainMagGraph.Y(springDyn.w0)]);
+        freqDomainMagGraphBoard.fullUpdate();
     }
-    else if($(freqDomainMagDbGraphBoard.containerObj).is(":hidden") === false)
+    else if(force || $(freqDomainMagDbGraphBoard.containerObj).is(":hidden") === false)
     {
         freqDomainMagDbGraph.Y = springDyn.magRespDb;
         freqDomainMagDbGraph.updateCurve();
@@ -365,8 +367,9 @@ function updateGraphs() {
                                                                     freqDomainMagDbGraph.Y(springDyn.we)]);
         freqDomainMagDbPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(springDyn.w0),
                                                                       freqDomainMagDbGraph.Y(springDyn.w0)]);
+        freqDomainMagDbGraphBoard.fullUpdate();
     }
-    else if($(freqDomainPhaseGraphBoard.containerObj).is(":hidden") === false)
+    else if(force || $(freqDomainPhaseGraphBoard.containerObj).is(":hidden") === false)
     {
         freqDomainPhaseGraph.Y = springDyn.phaseResp;
         freqDomainPhaseGraph.updateCurve();
@@ -377,74 +380,57 @@ function updateGraphs() {
         freqDomainPhasePointEigenFreq.setPosition(JXG.COORDS_BY_USER,
                                                   [Math.LOG10E*Math.log(springDyn.w0),
                                                    freqDomainPhaseGraph.Y(springDyn.w0)]);
+        freqDomainPhaseGraphBoard.fullUpdate();
     }
-    else if($(poleZeroGraphBoard.containerObj).is(":hidden") === false) {
-        // FIXME: Das hier sollte doch nur ausgeführt werden, wenn der Plot aktiv ist!!
+
+    if(force || $(poleZeroGraphBoard.containerObj).is(":hidden") === false) {
         poleZeroPole1.setPosition(JXG.COORDS_BY_USER , springDyn.poles[0]);
         poleZeroPole2.setPosition(JXG.COORDS_BY_USER , springDyn.poles[1]);
         poleZeroGraphBoard.update();
-
-        // poleZeroGraphBoard.zoomElements([poleZeroPole1, poleZeroPole2]);
-        // poleZeroGraphBoard.moveOrigin(poleZeroGraphBoard.origin.scrCoords[1],
-        //                               poleZeroGraphBoard.canvasHeight / 2);
     }
-
 }
 
+
+//* Rendering
 function render() {
 
     requestAnimationFrame(render);
 
-    if(ProgState.startTime === undefined) {
-        ProgState.startTime = Date.now();
-    }
-    var t = 0;
-    if(ProgState.runningFlag === true) {
+    if(ProgState.runningFlag) {
+        if(ProgState.startTime === undefined) {
+            ProgState.startTime = Date.now();
+        }
+        var t = 0;
         t = (Date.now() - ProgState.startTime)/1000;
-    }
+        var ut = springDyn.extForce(t);
 
+        var y = SpringConsts.yMount + SpringConsts.springLen - springDyn.positionFunc(t);
+        var yup = SpringConsts.yMount - ut;
 
-    var ut = springDyn.extForce(t);
-
-    if(ProgState.timeDomainTrace) {
-        timeDomainGlider.visible(true);
-        timeDomainExtForceGlider.visible(true);
-        timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,springDyn.positionFunc(t)]);
-        timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,ut]);
-        timeDomainGraphBoard.update();
-        // timeDomainGraphBoard.moveOrigin(timeDomainGraphBoard.containerObj.clientWidth/2 - (timeDomainGraphBoard.unitX * t), timeDomainGraphBoard.canvasHeight / 2);
-    } else {
-        timeDomainGlider.visible(false);
-        timeDomainExtForceGlider.visible(false);
-    }
-
-
-    // externe Kraft:
-    // var u0 = 25;
-    SpringConsts.bigWheelR = springDyn.u0;
-    // var we = 0.8*3*Math.PI/4;
-    // var extForceFunc = function(t) {return springDyn.u0
-    //     * Math.sin(springDyn.we*t);};
-    // var sd = new SpringDynamics(3*Math.PI/4, 0.25);
-    // var v0 = 0;
-    // var yfunc = springDyn.getPositionFunc(springDyn.u0, springDyn.we,50, v0);
-
-    var y = SpringConsts.yMount + SpringConsts.springLen - springDyn.positionFunc(t);
-    var yup = SpringConsts.yMount - ut;
-
-    ctx.clearRect(0,SpringConsts.ceilThickness, canvas.width,
-                  canvas.height-SpringConsts.ceilThickness);
-    drawAntrieb(-springDyn.we, t, yup);
-    // outerRect();
-    drawSpring(yup, y - SpringConsts.massRadius);
-    drawMass(y);
-    if(ProgState.timeDomainTrace) {
-        drawTrace(function(t) {return SpringConsts.yMount + SpringConsts.springLen -
-                               springDyn.positionFunc(t);},
-                  t, 'rgba(0,0,255, 0.6)');
-        drawTrace(function(t) {return SpringConsts.yMount -
-                               springDyn.extForce(t);},
-                  t, 'rgba(255,0,0, 0.6)');
+        ctx.clearRect(0,SpringConsts.ceilThickness, canvas.width,
+                      canvas.height-SpringConsts.ceilThickness);
+        drawAntrieb(-springDyn.we, t, yup);
+        // outerRect();
+        drawSpring(yup, y - SpringConsts.massRadius);
+        drawMass(y);
+        if(ProgState.timeDomainTrace) {
+            // draw trace in spring plot
+            drawTrace(function(t) {return SpringConsts.yMount + SpringConsts.springLen -
+                                   springDyn.positionFunc(t);},
+                      t, 'rgba(0,0,255, 0.6)');
+            drawTrace(function(t) {return SpringConsts.yMount -
+                                   springDyn.extForce(t);},
+                      t, 'rgba(255,0,0, 0.6)');
+            // add points to time domain plot
+            timeDomainGlider.visible(true);
+            timeDomainExtForceGlider.visible(true);
+            timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,springDyn.positionFunc(t)]);
+            timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,ut]);
+            timeDomainGraphBoard.update();
+        } else {
+            timeDomainGlider.visible(false);
+            timeDomainExtForceGlider.visible(false);
+        }
     }
 }
 render();

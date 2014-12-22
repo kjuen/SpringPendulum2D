@@ -1,4 +1,3 @@
-
 function resize_canvas()
 {
     var canvas = document.getElementById("mycanvas");
@@ -40,26 +39,16 @@ $(function() {
     });
 
     // control initial visibility of tabs
+    // see here: http://www.primefaces.org/primeui/accordion.html
     $("#tabs").puiaccordion({
         // activeIndex: [0,1,2,3,4],   // all tabs open
         activeIndex: [2,3],
-        multiple: true
-    });
-
-    $("#dialog-message").puidialog({
-        //autoOpen: false,
-        showEffect: 'fade',
-        hideEffect: 'fade',
-        minimizable: false,
-        maximizable: false,
-        buttons: [{
-            text: 'OK',
-            //icon: 'ui-icon-check',
-            click: function(p1,p2) {
-                $("#dialog-message").puidialog("hide");
-            }
-        }],
-        resizable: false
+        multiple: true,
+        change:  function(event, panel) {
+            // update all graphs when tabs get active
+            // TODO: How can we detect which tab has been opened?
+            updateGraphs(true);
+        }
     });
 
     // init buttons
@@ -112,9 +101,9 @@ $(function() {
 
     $("#damping-slider").slider({
         value: springDyn.d,
-        min: 0.02,
-        max: 1.5,
-        step: 0.02,
+        min: 0.05,
+        max: 1.2,
+        step: 0.01,
         slide: function( event, ui ) {
             $("#damping").val(ui.value);
             springDyn.d = ui.value;
@@ -156,6 +145,7 @@ $(function() {
         step: 1,
         slide: function( event, ui ) {
             $("#extforce-amp").val(ui.value);
+            SpringConsts.bigWheelR = ui.value;
             springDyn.u0 = ui.value;
             updateGraphs();
         }
@@ -226,5 +216,4 @@ function disableSliders() {
     $("#initveloc-slider").slider("disable");
     $("#extforce-amp-slider").slider("disable");
     $("#extforce-freq-slider").slider("disable");
-
 }

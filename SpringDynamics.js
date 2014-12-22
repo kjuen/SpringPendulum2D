@@ -21,7 +21,6 @@ function SpringDynamics(_w0, _d, _y0, _v0, _u0, _we) {
     _u0 = (_u0 === undefined ? 0 : _u0);
     _we = (_we === undefined ? 0 : _we);
 
-
     //* Parameters
     var _TOL = 0.00001;
     Object.defineProperty(this, 'TOL', {
