@@ -1,10 +1,12 @@
+/*global Spring */
+
 /**
  * This object represents the dynamics of an ideal spring.
  * The methods of this object create functions (closures) of t implementing the different
  * dynamic behaviors of the pendulum.
  *
  * @constructor
- * @this {SpringDynamics}
+ * @this {Spring.Dynamics}
  * @param {number} w0 eigenfrequency of the spring, must be > 0.
  * @param {number} d dimensionless friction constant, must be >= 0.
  * @param {number} y0 initial position y(0) (default: 0)
@@ -12,7 +14,7 @@
  * @param {number} u0 amplitude of suspension point (default: 0)
  * @param {number} we external frequency (default: 0)
  */
-function SpringDynamics(_w0, _d, _y0, _v0, _u0, _we) {
+Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
     "use strict";
 
     // set default values
@@ -338,7 +340,7 @@ function SpringDynamics(_w0, _d, _y0, _v0, _u0, _we) {
 
             ret = function(t) {
                 return _d*tmp2*_w0*_we*Math.exp(-t*_d*_w0)*(Math.exp(t*_w0*tmp)*(1+tmp3)+
-                                                       Math.exp(-t*_w0*tmp)*(1-tmp3))+
+                                                            Math.exp(-t*_w0*tmp)*(1-tmp3))+
                     tmp2*((_w0*_w0-_we*_we)*Math.sin(_we*t)-2*_d*_w0*_we*Math.cos(_we*t));
             };
         } else {
@@ -469,4 +471,14 @@ function SpringDynamics(_w0, _d, _y0, _v0, _u0, _we) {
         return poles;
     }
 
-}
+};
+
+// create SpringDynamics object with useful default parameters
+Spring.dyn = new Spring.Dynamics(
+    1.9, // w0
+    0.1, // d
+    0,   // y0
+    0,   // v0
+    25,  // u0
+    3   // we
+);

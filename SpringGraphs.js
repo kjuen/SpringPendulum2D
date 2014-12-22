@@ -1,50 +1,54 @@
-
-var graphBoardsArray = [];
+/*global Spring, JXG */
+Spring.Graphs = {};
+Spring.Graphs.graphBoardsArray = [];
 
 //* Time domain graphs
-var timeDomainGraphBoard = JXG.JSXGraph.initBoard('timeDomainGraph',
-                                                  {boundingbox:[-0.1, 30, 20, -30],
-                                                   keepaspectratio: false,
-                                                   axis: true,
-                                                   grid: false,
-                                                   pan: {
-                                                       needShift: false,
-                                                       enabled: true
-                                                   },
-                                                   showCopyright: false,
-                                                   showNavigation: true});
-graphBoardsArray.push(timeDomainGraphBoard);
+Spring.Graphs.timeDomainGraphBoard = JXG.JSXGraph.initBoard('timeDomainGraph',
+                                                            {boundingbox:[-0.1, 30, 20, -30],
+                                                             keepaspectratio: false,
+                                                             axis: true,
+                                                             grid: false,
+                                                             pan: {
+                                                                 needShift: false,
+                                                                 enabled: true
+                                                             },
+                                                             showCopyright: false,
+                                                             showNavigation: true});
+Spring.Graphs.graphBoardsArray.push(Spring.Graphs.timeDomainGraphBoard);
 
-var timeDomainGraph = timeDomainGraphBoard.create('functiongraph',
-                                                  [springDyn.positionFunc, 0],
-                                                  {strokeColor:'blue',
-                                                   strokeWidth:2,
-                                                   needsRegularUpdate: false,
-                                                   highlight: false});
+Spring.Graphs.timeDomainGraph =
+    Spring.Graphs.timeDomainGraphBoard.create('functiongraph',
+                                              [Spring.dyn.positionFunc, 0],
+                                              {strokeColor:'blue',
+                                               strokeWidth:2,
+                                               needsRegularUpdate: false,
+                                               highlight: false});
 
-var timeDomainExtForceGraph = timeDomainGraphBoard.create('functiongraph',
-                                                          [springDyn.extForce, 0],
-                                                          {strokeColor:'red',
-                                                           strokeWidth:2,
-                                                           needsRegularUpdate: false, highlight: false});
+Spring.Graphs.timeDomainExtForceGraph =
+    Spring.Graphs.timeDomainGraphBoard.create('functiongraph',
+                                              [Spring.dyn.extForce, 0],
+                                              {strokeColor:'red',
+                                               strokeWidth:2,
+                                               needsRegularUpdate: false, highlight: false});
 
-var timeDomainGlider = timeDomainGraphBoard.create('point',
-                                                   [0,springDyn.positionFunc(0)],
-                                                   {fixed: true,
-                                                    fillColor: 'blue',
-                                                    strokeColor: 'blue',
-                                                    highlight: false,
-                                                    withLabel: false,
-                                                    showInfobox: false});
+Spring.Graphs.timeDomainGlider =
+    Spring.Graphs.timeDomainGraphBoard.create('point',
+                                              [0,Spring.dyn.positionFunc(0)],
+                                              {fixed: true,
+                                               fillColor: 'blue',
+                                               strokeColor: 'blue',
+                                               highlight: false,
+                                               withLabel: false,
+                                               showInfobox: false});
 
-var timeDomainExtForceGlider = timeDomainGraphBoard.create('point',
-                                                           [0,0],
-                                                           {fixed: true,
-                                                            fillColor: 'red',
-                                                            strokeColor: 'red',
-                                                            highlight: false,
-                                                            withLabel: false,
-                                                            showInfobox: false});
+Spring.Graphs.timeDomainExtForceGlider = Spring.Graphs.timeDomainGraphBoard.create('point',
+                                                                                   [0,0],
+                                                                                   {fixed: true,
+                                                                                    fillColor: 'red',
+                                                                                    strokeColor: 'red',
+                                                                                    highlight: false,
+                                                                                    withLabel: false,
+                                                                                    showInfobox: false});
 
 
 //* Frequency domain graphs
@@ -71,29 +75,36 @@ var eigenFreqPointAttr = {fixed: true,
 
 
 
-var freqDomainMagGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagGraph',
-                                                     {boundingbox:[-0.1, 10, 10, -10],
-                                                      keepaspectratio: false,
-                                                      axis: true,
-                                                      grid: true,
-                                                      pan: {
-                                                          needShift: false,
-                                                          enabled: true
-                                                      },
-                                                      showCopyright: false,
-                                                      showNavigation: true});
-graphBoardsArray.push(freqDomainMagGraphBoard);
+Spring.Graphs.freqDomainMagGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagGraph',
+                                                               {boundingbox:[-0.1, 10, 10, -10],
+                                                                keepaspectratio: false,
+                                                                axis: true,
+                                                                grid: true,
+                                                                pan: {
+                                                                    needShift: false,
+                                                                    enabled: true
+                                                                },
+                                                                showCopyright: false,
+                                                                showNavigation: true});
+Spring.Graphs.graphBoardsArray.push(Spring.Graphs.freqDomainMagGraphBoard);
 
-var freqDomainMagGraph = freqDomainMagGraphBoard.create('functiongraph',
-                                                        [springDyn.magResp, 0],
-                                                        {strokeColor:'blue', strokeWidth:2, highlight: false});
+Spring.Graphs.freqDomainMagGraph =
+    Spring.Graphs.freqDomainMagGraphBoard.create('functiongraph',
+                                                 [Spring.dyn.magResp, 0],
+                                                 {strokeColor:'blue',
+                                                  strokeWidth:2,
+                                                  highlight: false});
 
-var freqDomainMagPointExtFreq = freqDomainMagGraphBoard.create('point',
-                                                               [springDyn.we, springDyn.magResp(springDyn.we)],
-                                                               extFreqPointAttr);
-var freqDomainMagPointEigenFreq = freqDomainMagGraphBoard.create('point',
-                                                                 [springDyn.w0, springDyn.magResp(springDyn.w0)],
-                                                                 eigenFreqPointAttr);
+Spring.Graphs.freqDomainMagPointExtFreq
+    = Spring.Graphs.freqDomainMagGraphBoard.create('point',
+                                                   [Spring.dyn.we,
+                                                    Spring.dyn.magResp(Spring.dyn.we)],
+                                                   extFreqPointAttr);
+Spring.Graphs.freqDomainMagPointEigenFreq
+    = Spring.Graphs.freqDomainMagGraphBoard.create('point',
+                                                   [Spring.dyn.w0,
+                                                    Spring.dyn.magResp(Spring.dyn.w0)],
+                                                   eigenFreqPointAttr);
 
 
 //** Helper functions for log plots
@@ -165,107 +176,114 @@ function createLogXTicks(graph) {
 }
 
 //** Magnitude plot (log-scale)
-var freqDomainMagDbGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagDbGraph',
-                                                       {boundingbox:[-1, 25, 2, -50],
-                                                        keepaspectratio: false,
-                                                        //axis: true,
-                                                        //grid: true,
-                                                        pan: {
-                                                            needShift: false,
-                                                            enabled: true
-                                                        },
-                                                        showCopyright: false,
-                                                        showNavigation: true});
+Spring.Graphs.freqDomainMagDbGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagDbGraph',
+                                                                 {boundingbox:[-1, 25, 2, -50],
+                                                                  keepaspectratio: false,
+                                                                  //axis: true,
+                                                                  //grid: true,
+                                                                  pan: {
+                                                                      needShift: false,
+                                                                      enabled: true
+                                                                  },
+                                                                  showCopyright: false,
+                                                                  showNavigation: true});
 
 // x-axis:
-var xAxisMagDb = freqDomainMagDbGraphBoard.create('axis', [[0,0],[1,0]],
-                                                  {
-                                                      ticks:
-                                                      {
-                                                          insertTicks: false,
-                                                          minorTicks: 0
-                                                      }
-                                                  });
+Spring.Graphs.xAxisMagDb = Spring.Graphs.freqDomainMagDbGraphBoard.create('axis', [[0,0],[1,0]],
+                                                                          {
+                                                                              ticks:
+                                                                              {
+                                                                                  insertTicks: false,
+                                                                                  minorTicks: 0
+                                                                              }
+                                                                          });
 
-xAxisMagDb.defaultTicks.generateLabelText = generateLogLabels;
-createLogXTicks(freqDomainMagDbGraphBoard);
+Spring.Graphs.xAxisMagDb.defaultTicks.generateLabelText = generateLogLabels;
+createLogXTicks(Spring.Graphs.freqDomainMagDbGraphBoard);
 
 // y-axis
-freqDomainMagDbGraphBoard.create('axis', [[0,0],[0,1]],
-                                 {ticks: {
-                                     label: {
-                                         anchorX: 'right',
-                                         offset: [20,0]
-                                     },
-                                     insertTicks: false,
-                                     ticksDistance: 10,
-                                     minorTicks: 1
-                                 }});
-freqDomainMagDbGraphBoard.fullUpdate();
+Spring.Graphs.freqDomainMagDbGraphBoard.create('axis', [[0,0],[0,1]],
+                                               {ticks: {
+                                                   label: {
+                                                       anchorX: 'right',
+                                                       offset: [20,0]
+                                                   },
+                                                   insertTicks: false,
+                                                   ticksDistance: 10,
+                                                   minorTicks: 1
+                                               }});
+Spring.Graphs.freqDomainMagDbGraphBoard.fullUpdate();
 
 
-var freqDomainMagDbGraph =
-        freqDomainMagDbGraphBoard.create('curve',
-                                         [function(t){ return Math.LOG10E*Math.log(t);},
-                                          springDyn.magRespDb,
-                                          -100,100],
-                                         {strokeColor:'blue',
-                                          strokeWidth:2,
-                                          highlight: false});
+Spring.Graphs.freqDomainMagDbGraph =
+    Spring.Graphs.freqDomainMagDbGraphBoard.create('curve',
+                                                   [function(t){ return Math.LOG10E*Math.log(t);},
+                                                    Spring.dyn.magRespDb,
+                                                    -100,100],
+                                                   {strokeColor:'blue',
+                                                    strokeWidth:2,
+                                                    highlight: false});
 
-var freqDomainMagDbPointExtFreq = freqDomainMagDbGraphBoard.create('point',
-                                                                   [Math.LOG10E*Math.log(springDyn.we), springDyn.magRespDb(springDyn.we)],
-                                                                   extFreqPointAttr);
-var freqDomainMagDbPointEigenFreq = freqDomainMagDbGraphBoard.create('point',
-                                                                     [Math.LOG10E*Math.log(springDyn.w0), springDyn.magRespDb(springDyn.w0)],
-                                                                     eigenFreqPointAttr);
+Spring.Graphs.freqDomainMagDbPointExtFreq =
+    Spring.Graphs.freqDomainMagDbGraphBoard.create('point',
+                                                   [Math.LOG10E*Math.log(Spring.dyn.we),
+                                                    Spring.dyn.magRespDb(Spring.dyn.we)],
+                                                   extFreqPointAttr);
+Spring.Graphs.freqDomainMagDbPointEigenFreq =
+    Spring.Graphs.freqDomainMagDbGraphBoard.create('point',
+                                                   [Math.LOG10E*Math.log(Spring.dyn.w0),
+                                                    Spring.dyn.magRespDb(Spring.dyn.w0)],
+                                                   eigenFreqPointAttr);
 
 $("#freqDomainMagDbGraph").hide();
 
 //** Phase plot
-var freqDomainPhaseGraphBoard = JXG.JSXGraph.initBoard('freqDomainPhaseGraph',
-                                                       {boundingbox:[-1, 50, 2, -220],
-                                                        keepaspectratio: false,
-                                                        // axis: true,
-                                                        // grid: false,
-                                                        pan: {
-                                                            needShift: false,
-                                                            enabled: true
-                                                        },
-                                                        showCopyright: false,
-                                                        showNavigation: true});
+Spring.Graphs.freqDomainPhaseGraphBoard = JXG.JSXGraph.initBoard('freqDomainPhaseGraph',
+                                                                 {boundingbox:[-1, 50, 2, -220],
+                                                                  keepaspectratio: false,
+                                                                  // axis: true,
+                                                                  // grid: false,
+                                                                  pan: {
+                                                                      needShift: false,
+                                                                      enabled: true
+                                                                  },
+                                                                  showCopyright: false,
+                                                                  showNavigation: true});
 // x-axis:
-var xAxisPhase = freqDomainPhaseGraphBoard.create('axis', [[0,0],[1,0]],
-                                                  {
-                                                      ticks:
-                                                      {
-                                                          insertTicks: false,
-                                                          minorTicks: 0
-                                                      }
-                                                  });
-xAxisPhase.defaultTicks.generateLabelText = generateLogLabels;
-createLogXTicks(freqDomainPhaseGraphBoard);
+Spring.Graphs.xAxisPhase = Spring.Graphs.freqDomainPhaseGraphBoard.create('axis', [[0,0],[1,0]],
+                                                                          {
+                                                                              ticks:
+                                                                              {
+                                                                                  insertTicks: false,
+                                                                                  minorTicks: 0
+                                                                              }
+                                                                          });
+Spring.Graphs.xAxisPhase.defaultTicks.generateLabelText = generateLogLabels;
+createLogXTicks(Spring.Graphs.freqDomainPhaseGraphBoard);
 // y-axis
-freqDomainPhaseGraphBoard.create('axis', [[0,0],[0,1]],
-                                 {ticks: {
-                                     insertTicks: false,
-                                     ticksDistance: 45
-                                 }});
-var freqDomainPhaseGraph = freqDomainPhaseGraphBoard.create('curve',
-                                                            [function(t){ return Math.LOG10E*Math.log(t);},
-                                                             springDyn.phaseResp,
-                                                             -100,100],
-                                                            {strokeColor:'blue',
-                                                             strokeWidth:2,
-                                                             highlight: false});
-var freqDomainPhasePointExtFreq = freqDomainPhaseGraphBoard.create('point',
-                                                                   [Math.LOG10E*Math.log(springDyn.we),
-                                                                    springDyn.phaseResp(springDyn.we)],
-                                                                   extFreqPointAttr);
-var freqDomainPhasePointEigenFreq = freqDomainPhaseGraphBoard.create('point',
-                                                                     [Math.LOG10E*Math.log(springDyn.w0),
-                                                                      springDyn.phaseResp(springDyn.w0)],
-                                                                     eigenFreqPointAttr);
+Spring.Graphs.freqDomainPhaseGraphBoard.create('axis', [[0,0],[0,1]],
+                                               {ticks: {
+                                                   insertTicks: false,
+                                                   ticksDistance: 45
+                                               }});
+Spring.Graphs.freqDomainPhaseGraph =
+    Spring.Graphs.freqDomainPhaseGraphBoard.create('curve',
+                                                   [function(t){ return Math.LOG10E*Math.log(t);},
+                                                    Spring.dyn.phaseResp,
+                                                    -100,100],
+                                                   {strokeColor:'blue',
+                                                    strokeWidth:2,
+                                                    highlight: false});
+Spring.Graphs.freqDomainPhasePointExtFreq =
+    Spring.Graphs.freqDomainPhaseGraphBoard.create('point',
+                                                   [Math.LOG10E*Math.log(Spring.dyn.we),
+                                                    Spring.dyn.phaseResp(Spring.dyn.we)],
+                                                   extFreqPointAttr);
+Spring.Graphs.freqDomainPhasePointEigenFreq =
+    Spring.Graphs.freqDomainPhaseGraphBoard.create('point',
+                                                   [Math.LOG10E*Math.log(Spring.dyn.w0),
+                                                    Spring.dyn.phaseResp(Spring.dyn.w0)],
+                                                   eigenFreqPointAttr);
 
 
 $("#freqDomainPhaseGraph").hide();
@@ -273,122 +291,122 @@ $("#freqDomainPhaseGraph").hide();
 
 
 //* Pole zero map
-var poleZeroGraphBoard = JXG.JSXGraph.initBoard('poleZeroGraph',
-                                                {boundingbox:[-3, 3, 1, -3],
-                                                 keepaspectratio: false,
-                                                 axis: true,
-                                                 grid: true,
-                                                 pan: {
-                                                     needShift: false,
-                                                     enabled: true
-                                                 },
-                                                 showCopyright: false,
-                                                 showNavigation: true});
+Spring.Graphs.poleZeroGraphBoard = JXG.JSXGraph.initBoard('poleZeroGraph',
+                                                          {boundingbox:[-3, 3, 1, -3],
+                                                           keepaspectratio: false,
+                                                           axis: true,
+                                                           grid: true,
+                                                           pan: {
+                                                               needShift: false,
+                                                               enabled: true
+                                                           },
+                                                           showCopyright: false,
+                                                           showNavigation: true});
 
-graphBoardsArray.push(poleZeroGraphBoard);
-poleZeroGraphBoard.create('axis', [[0,0],[1,0]],
-                          {ticks:
-                           { minorTicks: 0,
-                             minTicksDistance: 18,
-                             insertTicks: true,
-                             ticksDistance: 1}
-                          });
-poleZeroGraphBoard.create('axis', [[0,0],[0,1]],
-                          {ticks: {
-                              minorTicks: 0,
-                              minTicksDistance: 18,
-                              insertTicks: true,
-                              ticksDistance: 1}
-                          });
+Spring.Graphs.graphBoardsArray.push(Spring.Graphs.poleZeroGraphBoard);
+Spring.Graphs.poleZeroGraphBoard.create('axis', [[0,0],[1,0]],
+                                        {ticks:
+                                         { minorTicks: 0,
+                                           minTicksDistance: 18,
+                                           insertTicks: true,
+                                           ticksDistance: 1}
+                                        });
+Spring.Graphs.poleZeroGraphBoard.create('axis', [[0,0],[0,1]],
+                                        {ticks: {
+                                            minorTicks: 0,
+                                            minTicksDistance: 18,
+                                            insertTicks: true,
+                                            ticksDistance: 1}
+                                        });
 
-var poleZeroPole1 = poleZeroGraphBoard.create('point',
-                                              [springDyn.poles[0]],
-                                              {
-                                                  fixed: true,
-                                                  face: "cross",
-                                                  label: {strokeColor: "red"},
-                                                  withLabel: false,
-                                                  showInfobox: true,
-                                                  name: "1"
-                                              });
-var poleZeroPole2 = poleZeroGraphBoard.create('point',
-                                              [springDyn.poles[1]],
-                                              {
-                                                  fixed: true,
-                                                  face: "cross",
-                                                  label: {strokeColor: "red"},
-                                                  withLabel: false,
-                                                  showInfobox: true,
-                                                  name: "2"
-                                              });
-
+Spring.Graphs.poleZeroPole1 = Spring.Graphs.poleZeroGraphBoard.create('point',
+                                                                      [Spring.dyn.poles[0]],
+                                                                      {
+                                                                          fixed: true,
+                                                                          face: "cross",
+                                                                          label: {strokeColor: "red"},
+                                                                          withLabel: false,
+                                                                          showInfobox: true,
+                                                                          name: "1"
+                                                                      });
+Spring.Graphs.poleZeroPole2 = Spring.Graphs.poleZeroGraphBoard.create('point',
+                                                                      [Spring.dyn.poles[1]],
+                                                                      {
+                                                                          fixed: true,
+                                                                          face: "cross",
+                                                                          label: {strokeColor: "red"},
+                                                                          withLabel: false,
+                                                                          showInfobox: true,
+                                                                          name: "2"
+                                                                      });
 //* Graph update
 
 /**
  * updates graphs, by default only when they are active
  * @param{boolean} force also update hidden panels (default false)
  */
-function updateGraphs(force) {
+Spring.Graphs.update = function (force) {
 
     force = (force === undefined ? false : force);
 
-    if(force || $(timeDomainGraphBoard.containerObj).is(":hidden") === false) {
-        timeDomainGraph.Y = springDyn.positionFunc;
+    if(force || $(this.timeDomainGraphBoard.containerObj).is(":hidden") === false) {
+        this.timeDomainGraph.Y = Spring.dyn.positionFunc;
         //timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
-        if(ProgState.timeDomainTrace) {
-            timeDomainGlider.visible(true);
-            timeDomainExtForceGlider.visible(true);
-            timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[0,springDyn.positionFunc(0)]);
-            timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[0,0]);
+        if(Spring.ProgState.timeDomainTrace) {
+            var t = ((Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime)/1000;
+            this.timeDomainGlider.visible(true);
+            this.timeDomainExtForceGlider.visible(true);
+            this.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.positionFunc(t)]);
+            this.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.extForce(t)]);
         } else {
-            timeDomainGlider.visible(false);
-            timeDomainExtForceGlider.visible(false);
+            this.timeDomainGlider.visible(false);
+            this.timeDomainExtForceGlider.visible(false);
         }
-        timeDomainGraphBoard.fullUpdate();
+        this.timeDomainGraphBoard.fullUpdate();
     }
 
-    if(force || $(freqDomainMagGraphBoard.containerObj).is(":hidden") === false)
+    if(force || $(this.freqDomainMagGraphBoard.containerObj).is(":hidden") === false)
     {
-        freqDomainMagGraph.Y = springDyn.magResp;
-        freqDomainMagGraph.updateCurve();
-        freqDomainMagGraphBoard.update();
-        freqDomainMagPointExtFreq.setPosition(JXG.COORDS_BY_USER,[springDyn.we,
-                                                                  freqDomainMagGraph.Y(springDyn.we)]);
-        freqDomainMagPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[springDyn.w0,
-                                                                    freqDomainMagGraph.Y(springDyn.w0)]);
-        freqDomainMagGraphBoard.fullUpdate();
+        this.freqDomainMagGraph.Y = Spring.dyn.magResp;
+        this.freqDomainMagGraph.updateCurve();
+        this.freqDomainMagGraphBoard.update();
+        this.freqDomainMagPointExtFreq.setPosition(JXG.COORDS_BY_USER,[Spring.dyn.we,
+                                                                       this.freqDomainMagGraph.Y(Spring.dyn.we)]);
+        this.freqDomainMagPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Spring.dyn.w0,
+                                                                         this.freqDomainMagGraph.Y(Spring.dyn.w0)]);
+        this.freqDomainMagGraphBoard.fullUpdate();
     }
-    else if(force || $(freqDomainMagDbGraphBoard.containerObj).is(":hidden") === false)
+    else if(force || $(this.freqDomainMagDbGraphBoard.containerObj).is(":hidden") === false)
     {
-        freqDomainMagDbGraph.Y = springDyn.magRespDb;
-        freqDomainMagDbGraph.updateCurve();
-        freqDomainMagDbGraphBoard.update();
-        freqDomainMagDbPointExtFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(springDyn.we),
-                                                                    freqDomainMagDbGraph.Y(springDyn.we)]);
-        freqDomainMagDbPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(springDyn.w0),
-                                                                      freqDomainMagDbGraph.Y(springDyn.w0)]);
-        freqDomainMagDbGraphBoard.fullUpdate();
+        this.freqDomainMagDbGraph.Y = Spring.dyn.magRespDb;
+        this.freqDomainMagDbGraph.updateCurve();
+        this.freqDomainMagDbGraphBoard.update();
+        this.freqDomainMagDbPointExtFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(Spring.dyn.we),
+                                                                         this.freqDomainMagDbGraph.Y(Spring.dyn.we)]);
+        this.freqDomainMagDbPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(Spring.dyn.w0),
+                                                                           this.freqDomainMagDbGraph.Y(Spring.dyn.w0)]);
+        this.freqDomainMagDbGraphBoard.fullUpdate();
     }
-    else if(force || $(freqDomainPhaseGraphBoard.containerObj).is(":hidden") === false)
+    else if(force || $(this.freqDomainPhaseGraphBoard.containerObj).is(":hidden") === false)
     {
-        freqDomainPhaseGraph.Y = springDyn.phaseResp;
-        freqDomainPhaseGraph.updateCurve();
-        freqDomainPhaseGraphBoard.update();
-        freqDomainPhasePointExtFreq.setPosition(JXG.COORDS_BY_USER,
-                                                [Math.LOG10E*Math.log(springDyn.we),
-                                                 freqDomainPhaseGraph.Y(springDyn.we)]);
-        freqDomainPhasePointEigenFreq.setPosition(JXG.COORDS_BY_USER,
-                                                  [Math.LOG10E*Math.log(springDyn.w0),
-                                                   freqDomainPhaseGraph.Y(springDyn.w0)]);
-        freqDomainPhaseGraphBoard.fullUpdate();
+        this.freqDomainPhaseGraph.Y = Spring.dyn.phaseResp;
+        this.freqDomainPhaseGraph.updateCurve();
+        this.freqDomainPhaseGraphBoard.update();
+        this.freqDomainPhasePointExtFreq.setPosition(JXG.COORDS_BY_USER,
+                                                     [Math.LOG10E*Math.log(Spring.dyn.we),
+                                                      this.freqDomainPhaseGraph.Y(Spring.dyn.we)]);
+        this.freqDomainPhasePointEigenFreq.setPosition(JXG.COORDS_BY_USER,
+                                                       [Math.LOG10E*Math.log(Spring.dyn.w0),
+                                                        this.freqDomainPhaseGraph.Y(Spring.dyn.w0)]);
+        this.freqDomainPhaseGraphBoard.fullUpdate();
     }
 
-    if(force || $(poleZeroGraphBoard.containerObj).is(":hidden") === false) {
-        poleZeroPole1.setPosition(JXG.COORDS_BY_USER , springDyn.poles[0]);
-        poleZeroPole2.setPosition(JXG.COORDS_BY_USER , springDyn.poles[1]);
-        poleZeroGraphBoard.update();
+    if(force || $(this.poleZeroGraphBoard.containerObj).is(":hidden") === false) {
+        this.poleZeroPole1.setPosition(JXG.COORDS_BY_USER , Spring.dyn.poles[0]);
+        this.poleZeroPole2.setPosition(JXG.COORDS_BY_USER , Spring.dyn.poles[1]);
+        this.poleZeroGraphBoard.update();
     }
-}
+};
 
 
 //* Rendering
@@ -396,40 +414,23 @@ function render() {
 
     requestAnimationFrame(render);
 
-    if(ProgState.runningFlag) {
-        if(ProgState.startTime === undefined) {
-            ProgState.startTime = Date.now();
+    if(Spring.ProgState.runningFlag) {
+        if(Spring.ProgState.startTime === undefined) {
+            Spring.ProgState.startTime = Date.now();
         }
-        var t = 0;
-        t = (Date.now() - ProgState.startTime)/1000;
-        var ut = springDyn.extForce(t);
+        var t = (Date.now() - Spring.ProgState.startTime)/1000;
+        Spring.redraw(t);
 
-        var y = SpringConsts.yMount + SpringConsts.springLen - springDyn.positionFunc(t);
-        var yup = SpringConsts.yMount - ut;
-
-        ctx.clearRect(0,SpringConsts.ceilThickness, canvas.width,
-                      canvas.height-SpringConsts.ceilThickness);
-        drawAntrieb(-springDyn.we, t, yup);
-        // outerRect();
-        drawSpring(yup, y - SpringConsts.massRadius);
-        drawMass(y);
-        if(ProgState.timeDomainTrace) {
-            // draw trace in spring plot
-            drawTrace(function(t) {return SpringConsts.yMount + SpringConsts.springLen -
-                                   springDyn.positionFunc(t);},
-                      t, 'rgba(0,0,255, 0.6)');
-            drawTrace(function(t) {return SpringConsts.yMount -
-                                   springDyn.extForce(t);},
-                      t, 'rgba(255,0,0, 0.6)');
-            // add points to time domain plot
-            timeDomainGlider.visible(true);
-            timeDomainExtForceGlider.visible(true);
-            timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,springDyn.positionFunc(t)]);
-            timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,ut]);
-            timeDomainGraphBoard.update();
+        // add points to time domain plot
+        if(Spring.ProgState.timeDomainTrace) {
+            Spring.Graphs.timeDomainGlider.visible(true);
+            Spring.Graphs.timeDomainExtForceGlider.visible(true);
+            Spring.Graphs.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.positionFunc(t)]);
+            Spring.Graphs.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.extForce(t)]);
+            Spring.Graphs.timeDomainGraphBoard.update();
         } else {
-            timeDomainGlider.visible(false);
-            timeDomainExtForceGlider.visible(false);
+            Spring.Graphs.timeDomainGlider.visible(false);
+            Spring.Graphs.timeDomainExtForceGlider.visible(false);
         }
     }
 }

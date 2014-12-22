@@ -1,30 +1,43 @@
+// TODO: Die hier raus aus dem globalen Namespace
 function resize_canvas()
 {
+    // TODO:  Hier die Spring2D neu zeichnen
     var canvas = document.getElementById("mycanvas");
     var divcanvas = $("#canvas-container");
 
     canvas.width = divcanvas.width();
     canvas.height = divcanvas.height();
 
+    // redraw spring when not in run loop
+    if(!Spring.ProgState.runningFlag) {
+        var t = (Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime;
+        Spring.redraw(t/1000);
+    }
+
 }
 
 function resize_graphs() {
-    graphBoardsArray.forEach(function (board, index){
-        var oldWidth = board.canvasWidth;
-        var newWidth = $(board.containerObj).width();
-        var ratio = newWidth / oldWidth;
-        var oldHeight = $(board.containerObj).height();
-        var newHeight = newWidth * (2/3);
-        $(board.containerObj).height(newHeight);
-        board.renderer.resize(newWidth, newHeight);
-        var bb = board.getBoundingBox();
-        bb[2] *= ratio;
-        board.setBoundingBox(bb, board.attr.keepaspectratio);
-        board.fullUpdate();
+    Spring.Graphs.graphBoardsArray.forEach(function (board){
+        if($(board.containerObj).is(":hidden") === false) {
+            var oldWidth = board.canvasWidth;
+            var newWidth = $(board.containerObj).width();
+            var ratio = newWidth / oldWidth;
+            var oldHeight = $(board.containerObj).height();
+            var newHeight = newWidth * (2/3);
+            $(board.containerObj).height(newHeight);
+            board.renderer.resize(newWidth, newHeight);
+            var bb = board.getBoundingBox();
+            bb[2] *= ratio;
+            board.setBoundingBox(bb, board.attr.keepaspectratio);
+            board.fullUpdate();
+        }
     });
 }
 
+
 $(function() {
+
+
     $("#container").split({
         orientation: 'vertical',
         limit: 350,
@@ -47,7 +60,7 @@ $(function() {
         change:  function(event, panel) {
             // update all graphs when tabs get active
             // TODO: How can we detect which tab has been opened?
-            updateGraphs(true);
+            Spring.Graphs.update(true);
         }
     });
 
@@ -61,8 +74,8 @@ $(function() {
         $(this).button("disable");
         $(this).next().button("enable");
         disableSliders();
-        ProgState.runningFlag = true;
-        ProgState.startTime = undefined;
+        Spring.ProgState.runningFlag = true;
+        Spring.ProgState.startTime = undefined;
     });
 
     $("#button-stop").button({
@@ -71,20 +84,21 @@ $(function() {
         $(this).button("disable");
         $(this).prev().button("enable");
         enableSliders();
-        ProgState.runningFlag = false;
+        Spring.ProgState.runningFlag = false;
+        Spring.ProgState.resetTime = Date.now() - Spring.ProgState.startTime;
     });
 
     // init sliders
     $("#eigenfrequency-slider").slider({
-        value: springDyn.w0,
+        value: Spring.dyn.w0,
         min: 0.1,
         max: 5,
         step: 0.1,
         slide: function( event, ui ) {
             $("#eigenfrequency").val(ui.value);
-            springDyn.w0 = ui.value;
-            $("#initveloc-slider").slider("option", "min", SpringConsts.springLen * ui.value * -0.4);
-            $("#initveloc-slider").slider("option", "max", SpringConsts.springLen * ui.value * 0.4);
+            Spring.dyn.w0 = ui.value;
+            $("#initveloc-slider").slider("option", "min", Spring.Consts.springLen * ui.value * -0.4);
+            $("#initveloc-slider").slider("option", "max", Spring.Consts.springLen * ui.value * 0.4);
 
             if ($("#initveloc-slider").slider("option","value") > $("#initveloc-slider").slider("option","max")) {
 
@@ -94,73 +108,79 @@ $(function() {
 
                 $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","min"));
             }
-            updateGraphs();
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#eigenfrequency").val($("#eigenfrequency-slider").slider("value"));
 
     $("#damping-slider").slider({
-        value: springDyn.d,
+        value: Spring.dyn.d,
         min: 0.05,
         max: 1.2,
         step: 0.01,
         slide: function( event, ui ) {
             $("#damping").val(ui.value);
-            springDyn.d = ui.value;
-            updateGraphs();
+            Spring.dyn.d = ui.value;
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#damping").val($("#damping-slider").slider("value"));
 
     $("#initpos-slider").slider({
-        value: springDyn.y0,
-        min: SpringConsts.springLen * -0.4,
-        max: SpringConsts.springLen * 0.4,
+        value: Spring.dyn.y0,
+        min: Spring.Consts.springLen * -0.4,
+        max: Spring.Consts.springLen * 0.4,
         step: 1,
         slide: function( event, ui ) {
             $("#initpos").val(ui.value);
-            springDyn.y0 = ui.value;
-            updateGraphs();
+            Spring.dyn.y0 = ui.value;
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#initpos").val($("#initpos-slider").slider("value"));
 
     $("#initveloc-slider").slider({
-        value: springDyn.v0,
-        min: SpringConsts.springLen * springDyn.w0 * -0.4,
-        max: SpringConsts.springLen * springDyn.w0 * 0.4,
+        value: Spring.dyn.v0,
+        min: Spring.Consts.springLen * Spring.dyn.w0 * -0.4,
+        max: Spring.Consts.springLen * Spring.dyn.w0 * 0.4,
         step: 1,
         slide: function( event, ui ) {
             $("#initveloc").val(ui.value);
-            springDyn.v0 = ui.value;
-            updateGraphs();
+            Spring.dyn.v0 = ui.value;
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#initveloc").val($("#initveloc-slider").slider("value"));
 
     $("#extforce-amp-slider").slider({
-        value: springDyn.u0,
+        value: Spring.dyn.u0,
         min: 0,
         max: 50,
         step: 1,
         slide: function( event, ui ) {
             $("#extforce-amp").val(ui.value);
-            SpringConsts.bigWheelR = ui.value;
-            springDyn.u0 = ui.value;
-            updateGraphs();
+            Spring.Consts.bigWheelR = ui.value;
+            Spring.dyn.u0 = ui.value;
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#extforce-amp").val($("#extforce-amp-slider").slider("value"));
 
     $("#extforce-freq-slider").slider({
-        value: springDyn.we,
+        value: Spring.dyn.we,
         min: 0,
         max: 5,
         step: 0.01,
         slide: function( event, ui ) {
             $("#extforce-freq").val(ui.value);
-            springDyn.we = ui.value;
-            updateGraphs();
+            Spring.dyn.we = ui.value;
+            Spring.Graphs.update();
+            Spring.redraw(Spring.ProgState.resetTime/1000);
         }
     });
     $("#extforce-freq").val($("#extforce-freq-slider").slider("value"));
@@ -170,14 +190,14 @@ $(function() {
         $("#freqdomain-mag-db").button("enable");
         $("#freqDomainPhaseGraph").hide();
         $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ? "Db" : "")+"Graph").show();
-        updateGraphs();
-   });
+        Spring.Graphs.update();
+    });
     $("#freqdomain-phase").click(function() {
         $("#freqdomain-mag-db").button("disable");
         $("#freqDomainMagGraph").hide();
         $("#freqDomainMagDbGraph").hide();
         $("#freqDomainPhaseGraph").show();
-        updateGraphs();
+        Spring.Graphs.update();
     });
     $("#freqdomain-mag-db").button().click(function() {
         if ($(this).prop("checked") === true) {
@@ -187,12 +207,12 @@ $(function() {
             $("#freqDomainMagDbGraph").hide();
             $("#freqDomainMagGraph").show();
         }
-        updateGraphs();
+        Spring.Graphs.update();
     });
 
     // $("#timedomain-trace").prop("checked") = true;
     $("#timedomain-trace").button().click(function() {
-        ProgState.timeDomainTrace = $(this).prop("checked");
+        Spring.ProgState.timeDomainTrace = $(this).prop("checked");
     });
 
     // Disable all sliders for the first time
