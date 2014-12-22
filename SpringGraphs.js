@@ -1,4 +1,10 @@
+/**
+ * @author Alex Scaliante Coelho / https://github.com/alexscaliante
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
 /*global Spring, JXG */
+
 Spring.Graphs = {};
 Spring.Graphs.graphBoardsArray = [];
 
@@ -41,27 +47,27 @@ Spring.Graphs.timeDomainGlider =
                                                withLabel: false,
                                                showInfobox: false});
 
-Spring.Graphs.timeDomainExtForceGlider = Spring.Graphs.timeDomainGraphBoard.create('point',
-                                                                                   [0,0],
-                                                                                   {fixed: true,
-                                                                                    fillColor: 'red',
-                                                                                    strokeColor: 'red',
-                                                                                    highlight: false,
-                                                                                    withLabel: false,
-                                                                                    showInfobox: false});
+Spring.Graphs.timeDomainExtForceGlider =
+    Spring.Graphs.timeDomainGraphBoard.create('point',
+                                              [0,0],
+                                              {fixed: true,
+                                               fillColor: 'red',
+                                               strokeColor: 'red',
+                                               highlight: false,
+                                               withLabel: false,
+                                               showInfobox: false});
 
 
 //* Frequency domain graphs
 //** Magnitude plot (non-log)
 
 // attributes of point showing external frequency
-// TODO: infoboxtext klappt nicht!
 var extFreqPointAttr = {fixed: true,
                         fillColor: 'red',
                         strokeColor: 'red',
                         highlight: false,
                         withLabel: false,
-                        showInfobox: true,
+                        showInfobox: true,  // klappt nicht !?!
                         infoboxtext: 'External frequency'};
 
 var eigenFreqPointAttr = {fixed: true,
@@ -189,14 +195,15 @@ Spring.Graphs.freqDomainMagDbGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagD
                                                                   showNavigation: true});
 
 // x-axis:
-Spring.Graphs.xAxisMagDb = Spring.Graphs.freqDomainMagDbGraphBoard.create('axis', [[0,0],[1,0]],
-                                                                          {
-                                                                              ticks:
-                                                                              {
-                                                                                  insertTicks: false,
-                                                                                  minorTicks: 0
-                                                                              }
-                                                                          });
+Spring.Graphs.xAxisMagDb =
+    Spring.Graphs.freqDomainMagDbGraphBoard.create('axis', [[0,0],[1,0]],
+                                                   {
+                                                       ticks:
+                                                       {
+                                                           insertTicks: false,
+                                                           minorTicks: 0
+                                                       }
+                                                   });
 
 Spring.Graphs.xAxisMagDb.defaultTicks.generateLabelText = generateLogLabels;
 createLogXTicks(Spring.Graphs.freqDomainMagDbGraphBoard);
@@ -250,14 +257,15 @@ Spring.Graphs.freqDomainPhaseGraphBoard = JXG.JSXGraph.initBoard('freqDomainPhas
                                                                   showCopyright: false,
                                                                   showNavigation: true});
 // x-axis:
-Spring.Graphs.xAxisPhase = Spring.Graphs.freqDomainPhaseGraphBoard.create('axis', [[0,0],[1,0]],
-                                                                          {
-                                                                              ticks:
-                                                                              {
-                                                                                  insertTicks: false,
-                                                                                  minorTicks: 0
-                                                                              }
-                                                                          });
+Spring.Graphs.xAxisPhase =
+    Spring.Graphs.freqDomainPhaseGraphBoard.create('axis', [[0,0],[1,0]],
+                                                   {
+                                                       ticks:
+                                                       {
+                                                           insertTicks: false,
+                                                           minorTicks: 0
+                                                       }
+                                                   });
 Spring.Graphs.xAxisPhase.defaultTicks.generateLabelText = generateLogLabels;
 createLogXTicks(Spring.Graphs.freqDomainPhaseGraphBoard);
 // y-axis
@@ -351,7 +359,6 @@ Spring.Graphs.update = function (force) {
 
     if(force || $(this.timeDomainGraphBoard.containerObj).is(":hidden") === false) {
         this.timeDomainGraph.Y = Spring.dyn.positionFunc;
-        //timeDomainGraph.updateCurve();   // TODO: Ist das hier noetig (unten ist doch fullUpdate)?
         if(Spring.ProgState.timeDomainTrace) {
             var t = ((Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime)/1000;
             this.timeDomainGlider.visible(true);

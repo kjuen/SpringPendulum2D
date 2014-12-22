@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This script minifies the Spring code and creates single js and css files in the build directory
+
+cat SpringParams.js SpringDynamics.js SpringPendulum_UI.js Spring2D.js SpringGraphs.js > tmp.js
+/opt/js/jsmin/jsmin < tmp.js > tmp.min.js
+cat js/jsxgraphcore.js js/jquery-1.11.0.min.js js/jquery-ui-1.10.4.min.js js/primeui-1.0-min.js js/jquery.splitter-0.14.0.js tmp.min.js > build/all.js
+
+cat themes/smoothness/jquery-ui-1.10.4.custom.min.css themes/bootstrap/theme.css css/primeui-1.0-min.css css/jquery.splitter.css css/jsxgraph.css css/SpringPendulum.css > build/all.css
+
+rm tmp.js tmp.min.js

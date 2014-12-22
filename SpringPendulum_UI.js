@@ -1,7 +1,14 @@
-// TODO: Die hier raus aus dem globalen Namespace
+/**
+ * @author Alex Scaliante Coelho / https://github.com/alexscaliante
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
+
+/*global Spring */
+
+
 function resize_canvas()
 {
-    // TODO:  Hier die Spring2D neu zeichnen
     var canvas = document.getElementById("mycanvas");
     var divcanvas = $("#canvas-container");
 
@@ -53,6 +60,7 @@ $(function() {
 
     // control initial visibility of tabs
     // see here: http://www.primefaces.org/primeui/accordion.html
+    // jquery doesn't allow to have multiple tabs open
     $("#tabs").puiaccordion({
         // activeIndex: [0,1,2,3,4],   // all tabs open
         activeIndex: [2,3],

@@ -1,0 +1,270 @@
+\documentclass[paper=A4, pagesize, 12pt]{article}
+
+\usepackage[english]{babel}
+\usepackage[pdftex]{hyperref}
+\hypersetup{colorlinks=true,
+  urlcolor=blue}
+
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{a4wide}
+\usepackage[charter]{mathdesign}
+
+\newcommand{\sd}{\sqrt{d^2 - 1}}
+\newcommand{\sdm}{\sqrt{1-d^2}}
+
+\title{Spring Equations}
+\author{K. Jünemann}
+
+\begin{document}
+\maketitle
+
+\section{The differential equation}
+A mass $m$ attached to a spring with spring constant $k$, friction constant
+$r$ and external force $F(t)$ is described by the equation
+\[
+m \ddot{y}(t) + r \dot{y} (t) + k y(t) = F(t).
+\]
+$y(t)$ is the deviation of the pendulum mass from its rest position.
+
+It is useful to introduce the eigen-frequency
+\[
+\omega_0 = \sqrt{\frac{k}{m}}
+\]
+and the dimensionless friction constant
+\[
+d = \frac{r}{2\sqrt{km}}.
+\]
+$d>1$ means strong friction (no oscillations) and $d<1$ means low friction.
+The equation then reads after dividing by $m$:
+\[
+\ddot{y}(t) + 2 d \omega_0 \dot{y} (t) + \omega_0^2 y(t) = \frac{1}{m} F(t)
+\]
+If the external force is exerted by moving the upper suspension point of the
+spring by some deviation $u(t)$ out of its rest position the force is $F(t) =
+k\cdot u(t)$ leading to the main equation
+\begin{equation}
+  \label{eq:main}
+  \ddot{y}(t) + 2 d \omega_0 \dot{y} (t) + \omega_0^2 y(t) = \omega_0^2 u(t)
+\end{equation}
+
+\section{Step- and Impulse response}
+This section assumes vanishing initial conditions, $y(0) =0\, , \dot{y}(0) = 0$.
+
+The impulse response is
+\begin{itemize}
+  \item for $d>1$:
+  \[
+  h(t) =
+  \sigma(t) \frac{\omega_0}{2\sqrt{d^2 - 1}}
+  \mathrm{e}^{- d\, t\, \mathrm{\omega_0}}\,
+  \left(
+    \mathrm{e}^{t\,
+      \mathrm{\omega_0}\, \sqrt{d^2 - 1}} - \mathrm{e}^{- t\,
+      \mathrm{\omega_0}\, \sqrt{d^2 - 1}}
+  \right)
+  \]
+  \item for $d=1$:
+  \[
+  h(t) = \sigma(t) \cdot \omega_0^2 t e^{-\omega_0 t}
+  \]
+  \item for $0\leq d<1$:
+  \[
+  h(t) =
+  \sigma(t) \frac{\omega_0}{\sqrt{1 - d^2}}
+  \mathrm{e}^{- d\, t\, \mathrm{\omega_0}}\, \sin\!\left(t\,
+    \mathrm{\omega_0}\, \sqrt{1 - d^2}\right)
+  \]
+
+\end{itemize}
+
+The step response is
+\begin{itemize}
+  \item for $d>1$:
+  \[
+  g(t) =
+  \sigma(t) \cdot \left (
+    1 - \frac{1}{2}e^{-d\omega_0 t}
+    \left (
+      e^{t\omega_0 \sqrt{d^2-1}} \left ( 1 + \frac{d}{\sqrt{d^2-1}} \right )
+      + e^{-t\omega_0 \sqrt{d^2-1}} \left ( 1 - \frac{d}{\sqrt{d^2-1}} \right )
+    \right )
+  \right )
+  \]
+
+
+  % \frac{\sigma(t) - \mathrm{e}^{- t\, \mathrm{\omega_0}\, \left(d - \sqrt{d^2 -
+  %   1}\right)}\, \sigma(t)}{2\, m\, {\mathrm{\omega_0}}^2\, \left(d\, \sqrt{d^2
+  %   - 1} - d^2 + 1\right)} - \frac{\mathrm{e}^{- t\, \mathrm{\omega_0}\, \left(d +
+  %   \sqrt{d - 1}\, \sqrt{d + 1}\right)}\, \sigma(t)\, \left(\mathrm{e}^{t\,
+  %   \mathrm{\omega_0}\, \left(d + \sqrt{d^2 - 1}\right)} - 1\right)}{2\, m\,
+  % {\mathrm{\omega_0}}^2\, \sqrt{d^2 - 1}\, \left(d + \sqrt{d^2 - 1}\right)}
+
+  \item for $d=1$:
+  \[
+  g(t) = \sigma(t) \cdot \left (
+    1 - e^{-\omega_0 t} (1+t\omega_0)
+  \right )
+  \]
+
+  \item for $0\leq d<1$:
+  \[
+  g(t) =
+  \sigma(t) \cdot \left (
+    1 - e^{-d \omega_0 t}
+    \left (
+      \cos(t\omega_0 \sqrt{1-d^2})
+      + \frac{d}{\sqrt{1-d^2}}\sin(t\omega_0 \sqrt{1-d^2})
+    \right )
+  \right )
+  \]
+\end{itemize}
+
+
+\section{Solution with initial conditions without external force}
+With no external force, i.e. $F(t)=0$, but initial position $y_0$ and velocity
+$v_0$, i.e.
+\begin{equation}
+  \label{eq:init-cond}
+  y(0) = y_0 \; , \qquad \dot{y}(0) = v_0,
+\end{equation}
+
+the solution of the equation is
+\begin{itemize}
+  \item for $d>1$:
+  \begin{align*}
+    y_{\text{init}}(t) &= \frac{v_0 + y_0\omega_0 \sd + d \omega_0 y_0}{2\omega_0 \sd }
+    \text{e}^{\omega_0({\sd-d})t}  \\
+    &- \frac{v_0 - y_0\omega_0 \sd + d \omega_0 y_0}{2\omega_0 \sd }
+    \text{e}^{-\omega_0({\sd-d})t}
+  \end{align*}
+
+  \item for $d=1$:
+    \[
+    y_{\text{init}}(t) = y_0 \text{e}^{-\omega_0 t} + (v_0 + y_0 \omega_0) t \text{e}^{-\omega_0 t}
+    \]
+
+  \item for $0\leq d<1$:
+  \begin{align*}
+    y_{\text{init}}(t) &= y_0 \text{e}^{-\omega_0 t}  \cos(\omega_0 \sdm \cdot t) \\
+    &+ \frac{v_0 + d y_0 \omega_0}{\omega_0 \sdm} \sin(\omega_0 \sdm \cdot t)
+  \end{align*}
+
+\end{itemize}
+
+
+
+
+\section{Solution with harmonic external force and zero initial conditions}
+Let's assumue the motion of the upper suspension is
+\[
+u(t) = u_0 \cdot \sin(\omega_e t)
+\]
+with some given amplitude $u_0$, and external
+frequency $\omega_e$.
+Also, the pendulum motion starts with zero initial conditions,
+i.e.
+\[
+y(0) = 0\; , \qquad \dot{y}(0) = 0.
+\]
+Then the solution of the main equation (\ref{eq:main}) is
+\begin{itemize}
+  \item for $0\leq d<1$:
+  \[
+  y_{\text{ext}}(t) =
+  2\, d\, \omega_0\, \omega_e A
+      \mathrm{e}^{-
+        d\, t\, \omega_0}\, \left(\cos\!\left(t\, \omega_0\, D \right)
+        + \frac{\sin\!\left(t\, \omega_0\, D \right)\, \left(2\, d^2\, {\omega_0}^2 - {\omega_0}^2
+            + {\omega_e}^2\right)}{2\, d\, {\omega_0}^2\, D } \right)
+      \]
+      \[
+      - A
+        \left({\omega_e}^2\, \sin\!\left(t\, \omega_e\right) -
+          {\omega_0}^2\, \sin\!\left(t\, \omega_e\right) + 2\, d\,
+          \omega_0\, \omega_e\, \cos\!\left(t\,
+            \omega_e\right)\right)
+      \]
+      with
+      \[
+      D = \sqrt{1-d^2}\; , \qquad
+      A =  \frac{u_0\, {\omega_0}^2}{4\, d^2\, {\omega_0}^2\, {\omega_e}^2 +
+        {\omega_0}^4 - 2\, {\omega_0}^2\, {\omega_e}^2 +
+        {\omega_e}^4}
+      \]
+      \item for $d=1$:
+      \[
+      y_{\text{ext}}(t) =
+      2A \omega_0\, \omega_e\, \mathrm{e}^{- t\,
+          \omega_0}
+      \]
+      \[
+      +
+      A {(\omega_0}^2 - \omega_e^2) \sin\!\left(t\,
+          \omega_e\right)  -2\, A {\omega_0}\, \omega_e\,
+        \cos\!\left(t\, \omega_e\right)
+      \]
+      \[
+      + t\, B
+        \omega_e\, \mathrm{e}^{- t\,
+          \omega_0}
+      \]
+      with
+      \[
+      A = \frac{u_0 \omega_0^2}{({\omega_0}^2 + {\omega_e}^2)^2}\; , \qquad
+      B = \frac{u_0 \omega_0^2}{{\omega_0}^2 + {\omega_e}^2}
+      \]
+
+
+      \item for $d>1$:
+      \[
+      y_{\text{ext}}(t) =
+      2\, d\, A{\omega_0}\, \omega_e\, \mathrm{e}^{-
+        d\, t\, \omega_0}\, \left(\cosh\!\left(t\, \omega_0\, D \right)
+        + \frac{\sinh\!\left(t\, \omega_0\, D\right)\, \left(2\, d^2\,
+            {\omega_0}^2 - {\omega_0}^2 +
+            {\omega_e}^2\right)}{2\, d\, {\omega_0}^2\, D}\right)
+      \]
+      \[
+      - A
+        \left({\omega_e}^2\, \sin\!\left(t\, \omega_e\right) -
+          {\omega_0}^2\, \sin\!\left(t\, \omega_e\right) + 2\, d\,
+          \omega_0\, \omega_e\, \cos\!\left(t\,
+            \omega_e\right)\right)
+      \]
+      with
+      \[
+      A = \frac{u_0\, {\omega_0}^2}{4\, d^2\, {\omega_0}^2\,
+        {\omega_e}^2 + {\omega_0}^4 - 2\, {\omega_0}^2\,
+        {\omega_e}^2 + {\omega_e}^4}
+      \]
+      \[
+      D = \sqrt{d^2 - 1}
+      \]
+
+
+\end{itemize}
+
+
+\section{Solution with harmonic external force and non-zero initial conditions}
+Let's assumue the motion of the upper suspension is
+\[
+u(t) = u_0 \cdot \sin(\omega_e t)
+\]
+with some given amplitude $u_0$, and external
+frequency $\omega_e$.
+Also, the pendulum motion starts with non-zero initial conditions
+(\ref{eq:init-cond}). Then the solution $y(t)$ of the main equation
+(\ref{eq:main}) splits into two pieces
+\[
+y(t) = y_{\text{init}}(t) + y_{\text{ext}}(t)
+\]
+where the first term is the motion due to the initial conditions and the second
+term the motion due to the external force.
+
+
+
+\end{document}

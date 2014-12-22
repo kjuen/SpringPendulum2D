@@ -1,4 +1,7 @@
-// --- Definition of Spring namespace, constants and program state ---
+/**
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
 
 var Spring = {
 

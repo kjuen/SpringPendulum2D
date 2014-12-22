@@ -1,3 +1,7 @@
+/**
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
 /*global Spring */
 
 /**

@@ -1,10 +1,12 @@
+/**
+ *
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
 /*global Spring */
 
-// obtain 2d drawing context as global(!) variable
 Spring.canvas = document.getElementById("mycanvas");
 Spring.ctx = Spring.canvas.getContext("2d");
-
-// Spring.Consts defined in SpringParams.js
 
 /**
  * draw pendulum mass at position (Spring.Consts.X,y).

@@ -1,3 +1,8 @@
+/**
+ * @author K. Juenemann / https://github.com/kjuen
+*/
+
+
 // qunit tests for SpringDynamics object
 
 function compareNumbers(a,b,tol) {
