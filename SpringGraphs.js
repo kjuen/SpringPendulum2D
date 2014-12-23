@@ -101,13 +101,13 @@ Spring.Graphs.freqDomainMagGraph =
                                                   strokeWidth:2,
                                                   highlight: false});
 
-Spring.Graphs.freqDomainMagPointExtFreq
-    = Spring.Graphs.freqDomainMagGraphBoard.create('point',
+Spring.Graphs.freqDomainMagPointExtFreq =
+    Spring.Graphs.freqDomainMagGraphBoard.create('point',
                                                    [Spring.dyn.we,
                                                     Spring.dyn.magResp(Spring.dyn.we)],
                                                    extFreqPointAttr);
-Spring.Graphs.freqDomainMagPointEigenFreq
-    = Spring.Graphs.freqDomainMagGraphBoard.create('point',
+Spring.Graphs.freqDomainMagPointEigenFreq =
+    Spring.Graphs.freqDomainMagGraphBoard.create('point',
                                                    [Spring.dyn.w0,
                                                     Spring.dyn.magResp(Spring.dyn.w0)],
                                                    eigenFreqPointAttr);
