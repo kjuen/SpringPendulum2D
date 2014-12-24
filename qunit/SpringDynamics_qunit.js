@@ -3,7 +3,7 @@
 */
 
 
-// qunit tests for SpringDynamics object
+// qunit tests for SpringDynamics object. The reference values have been calculated with Matlab.
 
 function compareNumbers(a,b,tol) {
     var ok = (Math.abs(a-b)<tol);
