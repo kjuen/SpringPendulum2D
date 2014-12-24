@@ -18,7 +18,7 @@ Spring.Graphs.timeDomainGraphBoard = JXG.JSXGraph.initBoard('timeDomainGraph',
                                                                  needShift: false,
                                                                  enabled: true
                                                              },
-                                                             showCopyright: false,
+                                                             showCopyright: true,
                                                              showNavigation: true});
 Spring.Graphs.graphBoardsArray.push(Spring.Graphs.timeDomainGraphBoard);
 
@@ -90,7 +90,7 @@ Spring.Graphs.freqDomainMagGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagGra
                                                                     needShift: false,
                                                                     enabled: true
                                                                 },
-                                                                showCopyright: false,
+                                                                showCopyright: true,
                                                                 showNavigation: true});
 Spring.Graphs.graphBoardsArray.push(Spring.Graphs.freqDomainMagGraphBoard);
 
@@ -191,7 +191,7 @@ Spring.Graphs.freqDomainMagDbGraphBoard = JXG.JSXGraph.initBoard('freqDomainMagD
                                                                       needShift: false,
                                                                       enabled: true
                                                                   },
-                                                                  showCopyright: false,
+                                                                  showCopyright: true,
                                                                   showNavigation: true});
 
 // x-axis:
@@ -254,7 +254,7 @@ Spring.Graphs.freqDomainPhaseGraphBoard = JXG.JSXGraph.initBoard('freqDomainPhas
                                                                       needShift: false,
                                                                       enabled: true
                                                                   },
-                                                                  showCopyright: false,
+                                                                  showCopyright: true,
                                                                   showNavigation: true});
 // x-axis:
 Spring.Graphs.xAxisPhase =
@@ -308,7 +308,7 @@ Spring.Graphs.poleZeroGraphBoard = JXG.JSXGraph.initBoard('poleZeroGraph',
                                                                needShift: false,
                                                                enabled: true
                                                            },
-                                                           showCopyright: false,
+                                                           showCopyright: true,
                                                            showNavigation: true});
 
 Spring.Graphs.graphBoardsArray.push(Spring.Graphs.poleZeroGraphBoard);
