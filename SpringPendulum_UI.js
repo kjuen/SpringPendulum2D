@@ -1,42 +1,13 @@
 /**
  * @author Alex Scaliante Coelho / https://github.com/alexscaliante
  * @author K. Juenemann / https://github.com/kjuen
-*/
+ */
 
 
 /*global Spring */
 
-
-function resize_canvas()
-{
-    var canvas = document.getElementById("mycanvas");
-    var divcanvas = $("#canvas-container");
-
-    canvas.width = divcanvas.width();
-    canvas.height = divcanvas.height();
-
-    // redraw spring when not in run loop
-    if(!Spring.ProgState.runningFlag) {
-        var t = (Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime;
-        Spring.redraw(t/1000);
-    }
-
-}
-
-function resize_graphs() {
-    Spring.Graphs.graphBoardsArray.forEach(function (board){
-        if($(board.containerObj).is(":hidden") === false) {
-
-            var newWidth = 0.9*$('#right').width();
-            var newHeight = newWidth * (2/3);
-            board.resizeContainer(newWidth, newHeight);
-            board.fullUpdate();
-        }
-    });
-}
-
-
 $(function() {
+    "use strict";
 
     $("#container").split({
         orientation: 'vertical',
@@ -47,7 +18,7 @@ $(function() {
         //     resize_canvas();
         // },
         onDragEnd: function () {
-            resize_graphs();
+            Spring.Graphs.resize();
         }
     });
 
@@ -59,9 +30,8 @@ $(function() {
         activeIndex: [2,3],
         multiple: true,
         change:  function(event, panel) {
-            // update all graphs when tabs get active
-            // TODO: How can we detect which tab has been opened?
-            Spring.Graphs.update(true);
+            // make sure, the opened graph gets updated
+            Spring.Graphs.needUpdate = true;
         }
     });
 
@@ -191,14 +161,14 @@ $(function() {
         $("#freqdomain-mag-db").button("enable");
         $("#freqDomainPhaseGraph").hide();
         $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ? "Db" : "")+"Graph").show();
-        Spring.Graphs.update();
+        Spring.Graphs.needUpdate = true;
     });
     $("#freqdomain-phase").click(function() {
         $("#freqdomain-mag-db").button("disable");
         $("#freqDomainMagGraph").hide();
         $("#freqDomainMagDbGraph").hide();
         $("#freqDomainPhaseGraph").show();
-        Spring.Graphs.update();
+        Spring.Graphs.needUpdate = true;
     });
     $("#freqdomain-mag-db").button().click(function() {
         if ($(this).prop("checked") === true) {
@@ -208,7 +178,7 @@ $(function() {
             $("#freqDomainMagDbGraph").hide();
             $("#freqDomainMagGraph").show();
         }
-        Spring.Graphs.update();
+        Spring.Graphs.needUpdate = true;
     });
 
     // $("#timedomain-trace").prop("checked") = true;
@@ -218,7 +188,12 @@ $(function() {
 
     // Disable all sliders for the first time
     disableSliders();
-    resize_canvas();
+    var canvas = document.getElementById("mycanvas");
+    var divcanvas = $("#canvas-container");
+
+    canvas.width = divcanvas.width();
+    canvas.height = divcanvas.height();
+    // resize_canvas();
 });
 
 function enableSliders() {
