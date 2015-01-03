@@ -26,16 +26,10 @@ function resize_canvas()
 function resize_graphs() {
     Spring.Graphs.graphBoardsArray.forEach(function (board){
         if($(board.containerObj).is(":hidden") === false) {
-            var oldWidth = board.canvasWidth;
-            var newWidth = $(board.containerObj).width();
-            var ratio = newWidth / oldWidth;
-            var oldHeight = $(board.containerObj).height();
+
+            var newWidth = 0.9*$('#right').width();
             var newHeight = newWidth * (2/3);
-            $(board.containerObj).height(newHeight);
-            board.renderer.resize(newWidth, newHeight);
-            var bb = board.getBoundingBox();
-            bb[2] *= ratio;
-            board.setBoundingBox(bb, board.attr.keepaspectratio);
+            board.resizeContainer(newWidth, newHeight);
             board.fullUpdate();
         }
     });
@@ -44,15 +38,14 @@ function resize_graphs() {
 
 $(function() {
 
-
     $("#container").split({
         orientation: 'vertical',
-        limit: 350,
-        position: '60%',
+        limit: 350,    // minimum width of plots-panel
+        position: '60%',    // size ratio of panels
         invisible: true,
-        onDrag: function () {
-            resize_canvas();
-        },
+        // onDrag: function () {
+        //     resize_canvas();
+        // },
         onDragEnd: function () {
             resize_graphs();
         }
