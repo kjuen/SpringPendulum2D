@@ -31,7 +31,7 @@ Spring.Graphs.graphBoardsArray.push(Spring.Graphs.timeDomainGraphBoard);
 Spring.Graphs.timeDomainGraph =
     Spring.Graphs.timeDomainGraphBoard.create('functiongraph',
                                               [Spring.dyn.positionFunc,
-                                               function() {return Math.max(0, Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[0]);},
+                                               function() {return Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[0];},
                                                function() {return Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[2];}],
                                               {strokeColor:'blue',
                                                strokeWidth:2,
@@ -41,7 +41,7 @@ Spring.Graphs.timeDomainGraph =
 Spring.Graphs.timeDomainExtForceGraph =
     Spring.Graphs.timeDomainGraphBoard.create('functiongraph',
                                               [Spring.dyn.extForce,
-                                               function() {return Math.max(0, Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[0]);},
+                                               function() {return Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[0];},
                                                function() {return Spring.Graphs.timeDomainGraphBoard.getBoundingBox()[2];}],
                                               {strokeColor:'red',
                                                strokeWidth:2,
@@ -221,26 +221,8 @@ createLogXTicks(Spring.Graphs.freqDomainMagDbGraphBoard);
 
 // y-axis
 Spring.Graphs.freqDomainMagDbGraphBoard.create('axis', [[0,0],[0,1]]);
-                                               // {ticks: {
-                                               //     label: {
-                                               //         anchorX: 'right',
-                                               //         offset: [20,0]
-                                               //     },
-                                               //     insertTicks: false,
-                                               //     ticksDistance: 10,
-                                               //     minorTicks: 1
-                                               // }});
 
 
-
-// Spring.Graphs.freqDomainMagDbGraph =
-//     Spring.Graphs.freqDomainMagDbGraphBoard.create('curve',
-//                                                    [function(t){ return Math.LOG10E*Math.log(t);},
-//                                                     Spring.dyn.magRespDb,
-//                                                     -100,100],
-//                                                    {strokeColor:'blue',
-//                                                     strokeWidth:2,
-//                                                     highlight: false});
 Spring.Graphs.freqDomainMagDbGraph =
     Spring.Graphs.freqDomainMagDbGraphBoard.create('functiongraph',
                                                    [function(logw){ return Spring.dyn.magRespDb(Math.pow(10,logw));},
@@ -260,7 +242,6 @@ Spring.Graphs.freqDomainMagDbPointEigenFreq =
                                                    [Math.LOG10E*Math.log(Spring.dyn.w0),
                                                     Spring.dyn.magRespDb(Spring.dyn.w0)],
                                                    eigenFreqPointAttr);
-// Spring.Graphs.freqDomainMagDbGraphBoard.fullUpdate();
 $("#freqDomainMagDbGraph").hide();
 
 //** Phase plot
@@ -391,7 +372,7 @@ Spring.Graphs.resize = function() {
             board.fullUpdate();
         }
     });
-}
+};
 
 
 /**
@@ -404,6 +385,7 @@ Spring.Graphs.update = function (force) {
 
     if(force || $(this.timeDomainGraphBoard.containerObj).is(":hidden") === false) {
         this.timeDomainGraph.Y = Spring.dyn.positionFunc;
+        this.timeDomainExtForceGraph.Y = Spring.dyn.extForce;
         if(Spring.ProgState.timeDomainTrace) {
             var t = ((Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime)/1000;
             this.timeDomainGlider.visible(true);

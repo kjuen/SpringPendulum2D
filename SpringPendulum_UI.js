@@ -9,14 +9,12 @@
 $(function() {
     "use strict";
 
+    //* Left-right split
     $("#container").split({
         orientation: 'vertical',
         limit: 350,    // minimum width of plots-panel
         position: '60%',    // size ratio of panels
         invisible: true,
-        // onDrag: function () {
-        //     resize_canvas();
-        // },
         onDragEnd: function () {
             Spring.Graphs.resize();
         }
@@ -35,7 +33,7 @@ $(function() {
         }
     });
 
-    // init buttons
+    //* init buttons
     $("#control-buttons").buttonset();
 
     $("#button-start").button({
@@ -44,7 +42,7 @@ $(function() {
     }).click( function(event){
         $(this).button("disable");
         $(this).next().button("enable");
-        disableSliders();
+        disableElements();
         Spring.ProgState.runningFlag = true;
         Spring.ProgState.startTime = undefined;
     });
@@ -54,12 +52,12 @@ $(function() {
     }).click( function(event){
         $(this).button("disable");
         $(this).prev().button("enable");
-        enableSliders();
+        enableElements();
         Spring.ProgState.runningFlag = false;
         Spring.ProgState.resetTime = Date.now() - Spring.ProgState.startTime;
     });
 
-    // init sliders
+    //* init sliders
     $("#eigenfrequency-slider").slider({
         value: Spring.dyn.w0,
         min: 0.1,
@@ -71,13 +69,16 @@ $(function() {
             $("#initveloc-slider").slider("option", "min", Spring.Consts.springLen * ui.value * -0.4);
             $("#initveloc-slider").slider("option", "max", Spring.Consts.springLen * ui.value * 0.4);
 
-            if ($("#initveloc-slider").slider("option","value") > $("#initveloc-slider").slider("option","max")) {
+            if ($("#initveloc-slider").slider("option","value") >
+                $("#initveloc-slider").slider("option","max")) {
 
-                $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","max"));
+                $("#initveloc-slider").slider("option","value",
+                                              $("#initveloc-slider").slider("option","max"));
             }
-            else if ($("#initveloc-slider").slider("option","value") < $("#initveloc-slider").slider("option","min")) {
-
-                $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","min"));
+            else if ($("#initveloc-slider").slider("option","value") <
+                     $("#initveloc-slider").slider("option","min")) {
+                $("#initveloc-slider").slider("option","value",
+                                              $("#initveloc-slider").slider("option","min"));
             }
             Spring.Graphs.update();
             Spring.redraw(Spring.ProgState.resetTime/1000);
@@ -156,11 +157,36 @@ $(function() {
     });
     $("#extforce-freq").val($("#extforce-freq-slider").slider("value"));
 
+
+    function enableElements() {
+        $("#eigenfrequency-slider").slider("enable");
+        $("#damping-slider").slider("enable");
+        $("#initpos-slider").slider("enable");
+        $("#initveloc-slider").slider("enable");
+        $("#extforce-amp-slider").slider("enable");
+        $("#extforce-freq-slider").slider("enable");
+        $("#mode-select").prop('disabled', false);
+    }
+
+    function disableElements() {
+        $("#eigenfrequency-slider").slider("disable");
+        $("#damping-slider").slider("disable");
+        $("#initpos-slider").slider("disable");
+        $("#initveloc-slider").slider("disable");
+        $("#extforce-amp-slider").slider("disable");
+        $("#extforce-freq-slider").slider("disable");
+        $("#mode-select").prop('disabled', true);
+    }
+
+
+    //* Freqdomain buttons
+
     $("#freqdomain-mag-phase").buttonset();
     $("#freqdomain-mag").click(function() {
         $("#freqdomain-mag-db").button("enable");
         $("#freqDomainPhaseGraph").hide();
-        $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ? "Db" : "")+"Graph").show();
+        $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ?
+                            "Db" : "")+"Graph").show();
         Spring.Graphs.needUpdate = true;
     });
     $("#freqdomain-phase").click(function() {
@@ -187,29 +213,90 @@ $(function() {
     });
 
     // Disable all sliders for the first time
-    disableSliders();
+    disableElements();
     var canvas = document.getElementById("mycanvas");
     var divcanvas = $("#canvas-container");
 
     canvas.width = divcanvas.width();
     canvas.height = divcanvas.height();
-    // resize_canvas();
+
+    //* Language
+    var lang_de = {name: "Deutsch", otherLang: "English"};
+    lang_de.text = {};
+    var lang_en = {name: "English", otherLang: "Deutsch"};
+    lang_en.text = {};
+    function setText(id, txtde, txten) {
+        lang_de.text[id] = txtde;
+        lang_en.text[id] = txten;
+
+    }
+
+    setText("text-title", "Federpendel", "Spring Pendulum");
+    setText("text-parameters", "Parameter", "Parameters");
+    setText("text-initcondforce", "Anfangsbedingungen / Äußere Kraft",
+            "Initial Conditions / External Force");
+    setText("text-timedomain",
+            "Zeitbereich: " + $("#mode-select").find(":selected").text(),
+            "Time domain: " + $("#mode-select").find(":selected").text());
+    setText("text-freqdomain", "Frequenzbereich", "Frequency Domain");
+    setText("text-polezero", "Pol-Nullstellen-Diagramm", "Pole-Zero Map");
+    setText("text-eigenfreq", "Eigenfrequenz", "Eigenfrequency");
+    setText("text-damping", "Dämpfung", "Damping");
+    setText("text-impresp", "Impulsantwort", "Impulse Response");
+    setText("text-stepresp", "Sprungantwort", "Step Response");
+    setText("text-sineforceinitcond", "Sinuskraft und Anfangsbedingungen",
+            "Sine Force and Initial Conditions");
+    setText("text-initpos", "Anfangsposition", "Initial Position");
+    setText("text-initvel", "Anfangsgeschwindigkeit", "Initial Velocity");
+    setText("text-forceamp", "Amplitude der äußeren Kraft", "External Force's Amplitude");
+    setText("text-extforcefreq", "Frequenz der äußeren Kraft", "External Force's Frequency");
+    setText("text-mag", "Amp.", "Mag.");
+    setText("text-trace", "Spur", "Trace");
+    setText("text-headline-left", "Federpendel: " + $("#mode-select").find(":selected").text(),
+            "Spring Pendulum: " + $("#mode-select").find(":selected").text());
+
+    // this function sets the all text elements according to the chosen language.
+    function setLang() {
+
+        // first update text fields based on selected mode
+        var selId = $("#mode-select").find(":selected").attr("id");
+        setText("text-timedomain",
+            "Zeitbereich: " + lang_de.text[selId],
+            "Time domain: " + lang_en.text[selId]);
+        setText("text-headline-left",
+                "Federpendel: " + lang_de.text[selId],
+                "Spring Pendulum: " + lang_en.text[selId]);
+
+        // then loop over all ids to replace the text
+        for(var id in langObj.text) {
+            $("#"+id).text(langObj.text[id].toLocaleString());
+        }
+        // finally, set label of language button
+        $('#button-lang').text(langObj.otherLang);
+    }
+
+    // Initialization
+    var langObj;
+    if(window.location.hash.length == 3 &&
+       window.location.hash.substring(1,3).toLocaleLowerCase() == "en")
+        langObj = lang_en;
+    else langObj = lang_de;
+    setLang();
+
+    $("#button-lang").click(function() {
+        langObj = (langObj === lang_de) ? lang_en : lang_de;
+        setLang();
+    });
+    $("#mode-select").click(function() {
+        var selId = $(this).find(":selected").attr("id");
+        if(selId  === "text-impresp") {
+            Spring.dyn.mode = 1;
+        } else if (selId  === "text-stepresp") {
+            Spring.dyn.mode = 2;
+        } else {
+            Spring.dyn.mode = 0;
+        }
+        setLang();
+        Spring.Graphs.needUpdate = true;
+    });
 });
-
-function enableSliders() {
-    $("#eigenfrequency-slider").slider("enable");
-    $("#damping-slider").slider("enable");
-    $("#initpos-slider").slider("enable");
-    $("#initveloc-slider").slider("enable");
-    $("#extforce-amp-slider").slider("enable");
-    $("#extforce-freq-slider").slider("enable");
-}
-
-function disableSliders() {
-    $("#eigenfrequency-slider").slider("disable");
-    $("#damping-slider").slider("disable");
-    $("#initpos-slider").slider("disable");
-    $("#initveloc-slider").slider("disable");
-    $("#extforce-amp-slider").slider("disable");
-    $("#extforce-freq-slider").slider("disable");
-}
