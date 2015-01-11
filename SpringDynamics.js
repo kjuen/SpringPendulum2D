@@ -124,6 +124,23 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
 
     //* The actual calculations
 
+     function stepFunc(t) {
+         if(t<0) return 0;
+         else return _u0;
+     }
+
+    // approxiamte delta function as narrow rectangle
+    var deltaHeight = 10;
+    function deltaFunc(t) {
+        if((t>=0) && (t<=1/deltaHeight)) return _u0*deltaHeight;
+        else return 0;
+    }
+
+    function sineFunc(t) {
+        if(t<0) return 0;
+        else return _u0* Math.sin(_we*t);
+    }
+
 
     /**
      * creates function calculating the external force as function of t,
@@ -134,23 +151,11 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     function getExtForce() {
         switch(_mode) {
         case _IMP_RESP:
-            return function(t) {
-                return 0;
-            };
+            return deltaFunc;
         case _STEP_RESP:
-            return function(t) {
-                if(t<0)
-                    return 0;
-                else
-                    return _u0;
-            };
+            return stepFunc;
         default:
-            return function(t) {
-                if(t<0)
-                    return 0;
-                else
-                    return _u0 * Math.sin(_we*t);
-            };
+            return sineFunc;
         }
     }
 
