@@ -59,9 +59,11 @@ test( "getInitCondFunc(d<1)", function() {
 test( "impResp(d>1)", function() {
     var w0 = 2;
     var d = 1.8;
-    var sd = new Spring.Dynamics(w0, d);
+    var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
+    sd.mode = 1;
     sd.d = 1.8;    // check update functionality in Spring.Dynamics
-    var func = sd.impResp;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.2), 0.322385975270813, TOL, 't=1.2'));
     ok(compareNumbers(func(2.2), 0.175885363842198, TOL, 't=2.2'));
@@ -71,8 +73,10 @@ test( "impResp(d>1)", function() {
 test( "impResp(d=1)", function() {
     var w0 = 2;
     var d = 1;
-    var sd = new Spring.Dynamics(w0, d);
-    var func = sd.impResp;
+    var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
+    sd.mode = 1;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.1), 0.487533896794269, TOL, 't=1.1'));
     ok(compareNumbers(func(2.1), 0.125962845292012, TOL, 't=2.1'));
@@ -82,8 +86,10 @@ test( "impResp(d=1)", function() {
 test( "impResp(d<1)", function() {
     var w0 = 2;
     var d = 0.2;
-    var sd = new Spring.Dynamics(w0, d);
-    var func = sd.impResp;
+     var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
+    sd.mode = 1;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.1), 1.096204199192467, TOL, 't=1.1'));
     ok(compareNumbers(func(2.1), -0.728674183145747, TOL, 't=2.1'));
@@ -93,8 +99,10 @@ test( "impResp(d<1)", function() {
 test( "stepResp(d>1)", function() {
     var w0 = 2;
     var d = 1.8;
-    var sd = new Spring.Dynamics(w0, d);
-    var func = sd.stepResp;
+    var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
+    sd.mode = 2;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.1), 0.435007551666120, TOL, 't=1.1'));
     ok(compareNumbers(func(2.2), 0.710082116699747, TOL, 't=2.2'));
@@ -105,9 +113,11 @@ test( "stepResp(d>1)", function() {
 test( "stepResp(d=1)", function() {
     var w0 = 2;
     var d = 1;
-    var sd = new Spring.Dynamics(w0, d);
+    var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
     sd.d = 1;  // check update functionality in Spring.Dynamics
-    var func = sd.stepResp;
+    sd.mode = 2;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.1), 0.645429893240531, TOL, 't=1.1'));
     ok(compareNumbers(func(2.1), 0.922023000533515, TOL, 't=2.1'));
@@ -118,8 +128,10 @@ test( "stepResp(d=1)", function() {
 test( "stepResp(d<1)", function() {
     var w0 = 2;
     var d = 0.2;
-    var sd = new Spring.Dynamics(w0, d);
-    var func = sd.stepResp;
+    var u0 = 1;
+    var sd = new Spring.Dynamics(w0, d, 0, 0, u0);
+    sd.mode = 2;
+    var func = sd.positionFunc;
     equal(func(0), 0, 't=0');
     ok(compareNumbers(func(1.1), 1.245884343147375, TOL, 't=1.1'));
     ok(compareNumbers(func(2.1), 1.315647401829405, TOL, 't=2.1'));

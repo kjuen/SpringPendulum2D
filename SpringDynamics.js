@@ -29,6 +29,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     var _SINE_RESP = 0;
     var _IMP_RESP = 1;
     var _STEP_RESP = 2;
+    var _TOL = 0.00001;
 
     // set default values
     _y0 = (_y0 === undefined ? 0 : _y0);
@@ -49,7 +50,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     that.poles = getPoles();
 
     //* Parameters
-    var _TOL = 0.00001;
+
     Object.defineProperty(this, 'TOL', {
         get: function() {return _TOL;}
     });
@@ -452,13 +453,3 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     }
 
 };
-
-// create SpringDynamics object with useful default parameters
-Spring.dyn = new Spring.Dynamics(
-    1.9, // w0
-    0.1, // d
-    0,   // y0
-    0,   // v0
-    25,  // u0
-    3   // we
-);
