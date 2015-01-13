@@ -161,7 +161,8 @@ Spring.drawTrace = function(func, t, strokeStyle) {
     var ctx = this.ctx;
     var vx = 30;
     var N0 = 100;
-    var DeltaX = vx*t;
+    // var DeltaX = vx*t;
+    var DeltaX = vx*(t+ Spring.Prog.offset);
     var x = Spring.Consts.X - DeltaX;
     var dx, dt;
     if(x<0) {
@@ -172,15 +173,15 @@ Spring.drawTrace = function(func, t, strokeStyle) {
         dt = DeltaT/ N0;
     } else {
         dx = DeltaX / N0;
-        dt = t/N0;
-        t = 0;
+        dt = (t + Spring.Prog.offset)/N0;
+        t = - Spring.Prog.offset;
     }
     ctx.beginPath();
     ctx.moveTo(x, func(t));
     for(var k = 1; k<=N0; ++k) {
         x+= dx;
         t+=dt;
-        ctx.lineTo(x, func(t));
+        ctx.lineTo(x, Math.max(func(t), Spring.Consts.ceilThickness+5));
     }
     ctx.strokeStyle = strokeStyle;
     ctx.stroke();
@@ -192,16 +193,14 @@ Spring.drawTrace = function(func, t, strokeStyle) {
  * @param {number} t current time
 */
 Spring.redraw = function(t) {
-    Spring.ctx.clearRect(0,Spring.Consts.ceilThickness, Spring.canvas.width,
-                         Spring.canvas.height-Spring.Consts.ceilThickness);
+    Spring.ctx.clearRect(0,0,Spring.ctx.canvas.width, Spring.ctx.canvas.height);
     var y = Spring.Consts.yMount + Spring.Consts.springLen - Spring.dyn.positionFunc(t);
     var yup = Spring.Consts.yMount - Spring.dyn.extForce(t);
 
     Spring.drawAntrieb(-Spring.dyn.we, t, yup);
-    // outerRect();
     Spring.drawSpring(yup, y - Spring.Consts.massRadius);
     Spring.drawMass(y);
-    if(Spring.ProgState.timeDomainTrace) {
+    if(Spring.Prog.timeDomainTrace) {
         // draw trace in spring plot
         Spring.drawTrace(function(t) {return Spring.Consts.yMount + Spring.Consts.springLen -
                                       Spring.dyn.positionFunc(t);},
@@ -210,4 +209,4 @@ Spring.redraw = function(t) {
                                       Spring.dyn.extForce(t);},
                          t, 'rgba(255,0,0, 0.6)');
     }
-}
+};

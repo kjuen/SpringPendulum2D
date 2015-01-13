@@ -131,7 +131,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
      }
 
     // approxiamte delta function as narrow rectangle
-    var deltaHeight = 10;
+    var deltaHeight = 20;
     function deltaFunc(t) {
         if((t>=0) && (t<=1/deltaHeight)) return _u0*deltaHeight;
         else return 0;
@@ -453,3 +453,14 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     }
 
 };
+
+
+// create SpringDynamics object with useful default parameters
+Spring.dyn = new Spring.Dynamics(
+    1.9, // w0
+    0.1, // d
+    0,   // y0
+    0,   // v0
+    25,  // u0
+    3   // we
+);

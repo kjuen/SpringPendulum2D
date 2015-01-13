@@ -5,12 +5,47 @@
 
 var Spring = {
 
-    // State of the program
-    ProgState : {
-        runningFlag : true,     // state of Start/Reset buttons
-        startTime : undefined,
-        resetTime : undefined,
-        timeDomainTrace : true   // Trace button in Spring window
+
+    // State of the program, in particular simulation time
+    Prog : {
+        timeDomainTrace : true,   // Trace button in Spring window
+        RUN: 1,
+        STOP: 2,
+        PAUSE: 3,
+
+        _startTime : Date.now(),
+        _stopTime : undefined,
+        _offset : 1000,   // time offset in milliseconds
+
+        // return offset in seconds
+        get offset() {
+            return this._offset / 1000;
+        },
+
+        _state : 1,     // initial state = RUN
+        get state() {
+            return this._state;
+        },
+        set state(newState) {
+            if(newState === this.STOP || newState === this.PAUSE) {
+                this._stopTime = Date.now() - this._startTime;
+            } else if(newState === this.RUN && this._state === this.STOP) {
+                this._startTime = Date.now();
+            }
+            else if(newState === this.RUN && this._state === this.PAUSE) {
+                this._startTime = Date.now() - this._stopTime;
+            }
+            this._state = newState;
+        },
+
+        // returns simulation used in render function
+        getSimTime : function() {
+            if(this._state === this.RUN) {
+                return (Date.now() - this._startTime - this._offset)/1000;
+            } else {
+                return (this._stopTime - this._offset) / 1000;
+            }
+        }
     },
 
     // Spring constants: mainly used for drawing the spring.

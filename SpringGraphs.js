@@ -15,17 +15,18 @@ Spring.Graphs = {
 
 
 //* Time domain graphs
-Spring.Graphs.timeDomainGraphBoard = JXG.JSXGraph.initBoard('timeDomainGraph',
-                                                            {boundingbox:[-0.1, 30, 20, -30],
-                                                             keepaspectratio: false,
-                                                             axis: true,
-                                                             grid: false,
-                                                             pan: {
-                                                                 needShift: false,
-                                                                 enabled: true
-                                                             },
-                                                             showCopyright: true,
-                                                             showNavigation: true});
+Spring.Graphs.timeDomainGraphBoard =
+    JXG.JSXGraph.initBoard('timeDomainGraph',
+                           {boundingbox:[-Spring.Prog.offset, 30, 20, -30],
+                            keepaspectratio: false,
+                            axis: true,
+                            grid: false,
+                            pan: {
+                                needShift: false,
+                                enabled: true
+                            },
+                            showCopyright: true,
+                            showNavigation: true});
 Spring.Graphs.graphBoardsArray.push(Spring.Graphs.timeDomainGraphBoard);
 
 Spring.Graphs.timeDomainGraph =
@@ -386,12 +387,14 @@ Spring.Graphs.update = function (force) {
     if(force || $(this.timeDomainGraphBoard.containerObj).is(":hidden") === false) {
         this.timeDomainGraph.Y = Spring.dyn.positionFunc;
         this.timeDomainExtForceGraph.Y = Spring.dyn.extForce;
-        if(Spring.ProgState.timeDomainTrace) {
-            var t = ((Spring.ProgState.resetTime === undefined) ? 0 : Spring.ProgState.resetTime)/1000;
+        if(Spring.Prog.timeDomainTrace) {
+            var t = Spring.Prog.getSimTime();
             this.timeDomainGlider.visible(true);
             this.timeDomainExtForceGlider.visible(true);
-            this.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.positionFunc(t)]);
-            this.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.extForce(t)]);
+            this.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,
+                                              [t,Spring.dyn.positionFunc(t)]);
+            this.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,
+                                                      [t,Spring.dyn.extForce(t)]);
         } else {
             this.timeDomainGlider.visible(false);
             this.timeDomainExtForceGlider.visible(false);
@@ -404,28 +407,30 @@ Spring.Graphs.update = function (force) {
         this.freqDomainMagGraph.Y = Spring.dyn.magResp;
         this.freqDomainMagGraph.updateCurve();
         this.freqDomainMagGraphBoard.update();
-        this.freqDomainMagPointExtFreq.setPosition(JXG.COORDS_BY_USER,[Spring.dyn.we,
-                                                                       this.freqDomainMagGraph.Y(Spring.dyn.we)]);
-        this.freqDomainMagPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Spring.dyn.w0,
-                                                                         this.freqDomainMagGraph.Y(Spring.dyn.w0)]);
+        this.freqDomainMagPointExtFreq.setPosition(JXG.COORDS_BY_USER,
+                                                   [Spring.dyn.we,
+                                                    this.freqDomainMagGraph.Y(Spring.dyn.we)]);
+        this.freqDomainMagPointEigenFreq.setPosition(JXG.COORDS_BY_USER,
+                                                     [Spring.dyn.w0,
+                                                      this.freqDomainMagGraph.Y(Spring.dyn.w0)]);
         this.freqDomainMagGraphBoard.fullUpdate();
     }
     else if(force || $(this.freqDomainMagDbGraphBoard.containerObj).is(":hidden") === false)
     {
-        this.freqDomainMagDbGraph.Y = function(logw){ return Spring.dyn.magRespDb(Math.pow(10,logw));};
-        // this.freqDomainMagDbGraph.updateCurve();
-        // this.freqDomainMagDbGraphBoard.update();
-        this.freqDomainMagDbPointExtFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(Spring.dyn.we),
-                                                                         Spring.dyn.magRespDb(Spring.dyn.we)]);
-        this.freqDomainMagDbPointEigenFreq.setPosition(JXG.COORDS_BY_USER,[Math.LOG10E*Math.log(Spring.dyn.w0),
-                                                                           Spring.dyn.magRespDb(Spring.dyn.w0)]);
+        this.freqDomainMagDbGraph.Y = function(logw){
+            return Spring.dyn.magRespDb(Math.pow(10,logw));
+        };
+        this.freqDomainMagDbPointExtFreq.setPosition(JXG.COORDS_BY_USER,
+                                                     [Math.LOG10E*Math.log(Spring.dyn.we),
+                                                      Spring.dyn.magRespDb(Spring.dyn.we)]);
+        this.freqDomainMagDbPointEigenFreq.setPosition(JXG.COORDS_BY_USER,
+                                                       [Math.LOG10E*Math.log(Spring.dyn.w0),
+                                                        Spring.dyn.magRespDb(Spring.dyn.w0)]);
         this.freqDomainMagDbGraphBoard.fullUpdate();
     }
     else if(force || $(this.freqDomainPhaseGraphBoard.containerObj).is(":hidden") === false)
     {
         this.freqDomainPhaseGraph.Y = function(logw){ return Spring.dyn.phaseResp(Math.pow(10,logw));};
-        // this.freqDomainPhaseGraph.updateCurve();
-        // this.freqDomainPhaseGraphBoard.update();
         this.freqDomainPhasePointExtFreq.setPosition(JXG.COORDS_BY_USER,
                                                      [Math.LOG10E*Math.log(Spring.dyn.we),
                                                       Spring.dyn.phaseResp(Spring.dyn.we)]);
@@ -454,18 +459,18 @@ function render() {
         Spring.Graphs.resize();
     }
 
-    if(Spring.ProgState.runningFlag) {
-        if(Spring.ProgState.startTime === undefined) {
-            Spring.ProgState.startTime = Date.now();
-        }
-        var t = (Date.now() - Spring.ProgState.startTime)/1000;
+    if(Spring.Prog.state === Spring.Prog.RUN) {
+
+        var t = Spring.Prog.getSimTime();
         Spring.redraw(t);
 
-        if(Spring.ProgState.timeDomainTrace) {
+        if(Spring.Prog.timeDomainTrace) {
             Spring.Graphs.timeDomainGlider.visible(true);
             Spring.Graphs.timeDomainExtForceGlider.visible(true);
-            Spring.Graphs.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.positionFunc(t)]);
-            Spring.Graphs.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,[t,Spring.dyn.extForce(t)]);
+            Spring.Graphs.timeDomainGlider.setPosition(JXG.COORDS_BY_USER,
+                                                       [t,Spring.dyn.positionFunc(t)]);
+            Spring.Graphs.timeDomainExtForceGlider.setPosition(JXG.COORDS_BY_USER,
+                                                               [t,Spring.dyn.extForce(t)]);
             Spring.Graphs.timeDomainGraphBoard.update();
         } else {
             Spring.Graphs.timeDomainGlider.visible(false);
