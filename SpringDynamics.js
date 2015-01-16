@@ -27,8 +27,12 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
 
     // mode values
     var _SINE_RESP = 0;
+    Object.defineProperty(this, 'SINE_RESP', { get: function() {return _SINE_RESP;}});
     var _IMP_RESP = 1;
+    Object.defineProperty(this, '_IMP_RESP', { get: function() {return _IMP_RESP;}});
     var _STEP_RESP = 2;
+    Object.defineProperty(this, '_STEP_RESP', { get: function() {return _IMP_RESP;}});
+
     var _TOL = 0.00001;
 
     // set default values
@@ -51,13 +55,11 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
 
     //* Parameters
 
-    Object.defineProperty(this, 'TOL', {
-        get: function() {return _TOL;}
-    });
-
-
     Object.defineProperty(this, 'mode', {
+        get: function() {return _mode;},
         set: function(newMode) {
+            console.log('Setting mode to ', newMode);
+
             _mode = newMode;
             that.extForce = getExtForce();
             that.positionFunc = getPositionFunc();
@@ -184,8 +186,6 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
 
         }
     }
-
-
 
     /**
      * creates function y(t) calculating the pendulum position as function of t for given
@@ -453,6 +453,11 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     }
 
 };
+
+
+Spring.Dynamics.prototype.SINE_RESP = 0;
+Spring.Dynamics.prototype.IMP_RESP = 1;
+Spring.Dynamics.prototype.STEP_RESP = 2;
 
 
 // create SpringDynamics object with useful default parameters

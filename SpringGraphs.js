@@ -462,7 +462,7 @@ function render() {
     if(Spring.Prog.state === Spring.Prog.RUN) {
 
         var t = Spring.Prog.getSimTime();
-        Spring.redraw(t);
+        Spring.redraw(t, Spring.dyn.mode === Spring.dyn.IMP_RESP);
 
         if(Spring.Prog.timeDomainTrace) {
             Spring.Graphs.timeDomainGlider.visible(true);

@@ -159,9 +159,8 @@ Spring.drawSpring = function(yup, ydown) {
 */
 Spring.drawTrace = function(func, t, strokeStyle) {
     var ctx = this.ctx;
-    var vx = 30;
+    var vx = 30;    // trace speed
     var N0 = 100;
-    // var DeltaX = vx*t;
     var DeltaX = vx*(t+ Spring.Prog.offset);
     var x = Spring.Consts.X - DeltaX;
     var dx, dt;
@@ -181,7 +180,7 @@ Spring.drawTrace = function(func, t, strokeStyle) {
     for(var k = 1; k<=N0; ++k) {
         x+= dx;
         t+=dt;
-        ctx.lineTo(x, Math.max(func(t), Spring.Consts.ceilThickness+5));
+        ctx.lineTo(x, func(t));
     }
     ctx.strokeStyle = strokeStyle;
     ctx.stroke();
@@ -189,10 +188,44 @@ Spring.drawTrace = function(func, t, strokeStyle) {
 
 
 /**
+ * draw the trace of a delta function
+ * @param {number} height (in pixel) of delta peak
+ * @param {number} yOffset y coordinate of zero-line of delta function
+ * @param {number} t current time
+ * @param {number} yup vertical position of upper spring end.
+*/
+Spring.drawDeltaTrace = function(height, yOffset, t, strokeStyle) {
+    var ctx = this.ctx;
+    var vx = 30;   // trace speed
+    var arrowLen = 5;
+    var DeltaX = vx*(t+ Spring.Prog.offset);
+    var peakX =  Spring.Consts.X - vx*t;  // peak position
+    var x = Spring.Consts.X - DeltaX;
+    var dx, dt;
+    if(x<0) {
+        x = 0;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x, yOffset);
+    ctx.lineTo(Spring.Consts.X, yOffset);
+    if(t > 0 && peakX > 0) {
+        // draw the delta peak
+        ctx.moveTo(peakX, yOffset);
+        ctx.lineTo(peakX, yOffset-height);
+        ctx.lineTo(peakX+arrowLen, yOffset-height+arrowLen);
+        ctx.moveTo(peakX, yOffset-height);
+        ctx.lineTo(peakX-arrowLen, yOffset-height+arrowLen);
+    }
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
+};
+
+/**
  * redraw everything at time t
  * @param {number} t current time
+ * @param {boolean} deltaForce flag telling if force is a delta peak
 */
-Spring.redraw = function(t) {
+Spring.redraw = function(t, deltaForce) {
     Spring.ctx.clearRect(0,0,Spring.ctx.canvas.width, Spring.ctx.canvas.height);
     var y = Spring.Consts.yMount + Spring.Consts.springLen - Spring.dyn.positionFunc(t);
     var yup = Spring.Consts.yMount - Spring.dyn.extForce(t);
@@ -205,8 +238,13 @@ Spring.redraw = function(t) {
         Spring.drawTrace(function(t) {return Spring.Consts.yMount + Spring.Consts.springLen -
                                       Spring.dyn.positionFunc(t);},
                          t, 'rgba(0,0,255, 0.6)');
-        Spring.drawTrace(function(t) {return Spring.Consts.yMount -
-                                      Spring.dyn.extForce(t);},
-                         t, 'rgba(255,0,0, 0.6)');
+        if(deltaForce) {
+            Spring.drawDeltaTrace(Spring.Consts.deltaHeight, Spring.Consts.yMount,
+                                  t, 'rgba(255,0,0, 0.6)');
+        } else {
+            Spring.drawTrace(function(t) {return Spring.Consts.yMount -
+                                          Spring.dyn.extForce(t);},
+                             t, 'rgba(255,0,0, 0.6)');
+        }
     }
 };

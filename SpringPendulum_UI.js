@@ -302,15 +302,15 @@ $(function() {
     $("#mode-select").click(function() {
         var selId = $(this).find(":selected").attr("id");
         if(selId  === "text-impresp") {
-            Spring.dyn.mode = 1;
+            Spring.dyn.mode = Spring.dyn.IMP_RESP;
             $("#initpos-slider").slider("disable");
             $("#initveloc-slider").slider("disable");
         } else if (selId  === "text-stepresp") {
-            Spring.dyn.mode = 2;
+            Spring.dyn.mode = Spring.dyn.STEP_RESP;
             $("#initpos-slider").slider("disable");
             $("#initveloc-slider").slider("disable");
         } else {
-            Spring.dyn.mode = 0;
+            Spring.dyn.mode = Spring.dyn.SINE_RESP;
             $("#initpos-slider").slider("enable");
             $("#initveloc-slider").slider("enable");
         }

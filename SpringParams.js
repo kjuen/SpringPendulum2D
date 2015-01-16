@@ -5,7 +5,6 @@
 
 var Spring = {
 
-
     // State of the program, in particular simulation time
     Prog : {
         timeDomainTrace : true,   // Trace button in Spring window
@@ -63,6 +62,7 @@ var Spring = {
         ceilThickness : 30,   // Dicke der Decke
         ceilX : 100,
         ceilWidth : 400,
-        yMount : 120
+        yMount : 120,
+        deltaHeight: 80
     }
 };
