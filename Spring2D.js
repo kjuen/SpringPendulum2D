@@ -22,9 +22,12 @@ Spring.drawMass = function(y, withLighSource) {
     ctx.arc(Spring.Consts.X, y, Spring.Consts.massRadius, 0, 2*Math.PI);
 
     if(withLighSource) {
-        var distML = Math.sqrt( (Spring.Consts.X-Spring.Consts.lightX)*(Spring.Consts.X-Spring.Consts.lightX) +
-                                (y-Spring.Consts.lightY)*(y-Spring.Consts.lightY));
-        var gradCenterX = Spring.Consts.X  - 0.5*Spring.Consts.massRadius*(Spring.Consts.X-Spring.Consts.lightX)/distML;
+        var distML =
+                Math.sqrt( (Spring.Consts.X-Spring.Consts.lightX)*
+                           (Spring.Consts.X-Spring.Consts.lightX) +
+                           (y-Spring.Consts.lightY)*(y-Spring.Consts.lightY));
+        var gradCenterX = Spring.Consts.X  -
+                0.5*Spring.Consts.massRadius*(Spring.Consts.X-Spring.Consts.lightX)/distML;
         var gradCenterY = y  - 0.5*Spring.Consts.massRadius*(y-Spring.Consts.lightY)/distML;
 
         var grad = ctx.createRadialGradient(gradCenterX, gradCenterY, 5,
@@ -112,9 +115,13 @@ Spring.drawAntrieb = function(om, t, yup) {
 /**
  * draw the spring.
  * @param {number} yup vertical position of upper spring end.
- * @param {number} yup vertical position of lower spring end.
+ * @param {number} ydown vertical position of lower spring end.
 */
 Spring.drawSpring = function(yup, ydown) {
+    if(ydown - Spring.Consts.windMinHeight * Spring.Consts.springN <= yup) {
+        alert(Spring.langObj.largeOscErr);
+    }
+
     var topRadius = 5;
     var y1 = yup + 1.5*topRadius;
     var springLen = ydown - y1;
@@ -139,7 +146,7 @@ Spring.drawSpring = function(yup, ydown) {
     ctx.moveTo(Spring.Consts.X, yup + topRadius/2);
     ctx.lineTo(Spring.Consts.X, y1);
 
-    var N = 150;   // Dieser Wert ist sehr kritisch fuer die Laufzeit
+    var N = 200;   // Dieser Wert ist sehr kritisch fuer die Laufzeit
     var om = 2*Math.PI/springLen*Spring.Consts.springN;
     for(var k=1; k<=N; ++k) {
         var d = k/N*springLen;

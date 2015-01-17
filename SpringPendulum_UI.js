@@ -233,9 +233,17 @@ $(function() {
     canvas.height = divcanvas.height();
 
     //* Language
-    var lang_de = {name: "Deutsch", otherLang: "English"};
+    var lang_de = {
+        name: "Deutsch",
+        otherLang: "English",
+        largeOscErr: "Schwingung zu groß, Simulation unrealistisch!"
+    };
     lang_de.text = {};
-    var lang_en = {name: "English", otherLang: "Deutsch"};
+    var lang_en = {
+        name: "English",
+        otherLang: "Deutsch",
+        largeOscErr: "Oscillation too large, Simulation unrealistic!"
+    };
     lang_en.text = {};
     function setText(id, txtde, txten) {
         lang_de.text[id] = txtde;
@@ -267,6 +275,7 @@ $(function() {
     setText("text-headline-left", "Federpendel: " + $("#mode-select").find(":selected").text(),
             "Spring Pendulum: " + $("#mode-select").find(":selected").text());
 
+
     // this function sets the all text elements according to the chosen language.
     function setLang() {
 
@@ -280,23 +289,22 @@ $(function() {
                 "Spring Pendulum: " + lang_en.text[selId]);
 
         // then loop over all ids to replace the text
-        for(var id in langObj.text) {
-            $("#"+id).text(langObj.text[id].toLocaleString());
+        for(var id in Spring.langObj.text) {
+            $("#"+id).text(Spring.langObj.text[id].toLocaleString());
         }
         // finally, set label of language button
-        $('#button-lang').text(langObj.otherLang);
+        $('#button-lang').text(Spring.langObj.otherLang);
     }
 
-    // Initialization
-    var langObj;
+    // Initialization basedd on url hash tag
     if(window.location.hash.length == 3 &&
        window.location.hash.substring(1,3).toLocaleLowerCase() == "en")
-        langObj = lang_en;
-    else langObj = lang_de;
+        Spring.langObj = lang_en;
+    else Spring.langObj = lang_de;
     setLang();
 
     $("#button-lang").click(function() {
-        langObj = (langObj === lang_de) ? lang_en : lang_de;
+        Spring.langObj = (Spring.langObj === lang_de) ? lang_en : lang_de;
         setLang();
     });
     $("#mode-select").click(function() {
@@ -305,14 +313,17 @@ $(function() {
             Spring.dyn.mode = Spring.dyn.IMP_RESP;
             $("#initpos-slider").slider("disable");
             $("#initveloc-slider").slider("disable");
+            $("#extforce-freq-slider").slider("disable");
         } else if (selId  === "text-stepresp") {
             Spring.dyn.mode = Spring.dyn.STEP_RESP;
             $("#initpos-slider").slider("disable");
             $("#initveloc-slider").slider("disable");
+            $("#extforce-freq-slider").slider("disable");
         } else {
             Spring.dyn.mode = Spring.dyn.SINE_RESP;
             $("#initpos-slider").slider("enable");
             $("#initveloc-slider").slider("enable");
+            $("#extforce-freq-slider").slider("enable");
         }
         setLang();
         Spring.Graphs.needUpdate = true;

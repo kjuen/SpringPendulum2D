@@ -4,6 +4,7 @@
 
 
 var Spring = {
+    langObj : [],   // language object, to be set in SpringPendulum_UI.js
 
     // State of the program, in particular simulation time
     Prog : {
@@ -49,12 +50,13 @@ var Spring = {
 
     // Spring constants: mainly used for drawing the spring.
     Consts : {
-        springLen: 200,     // natural spring length
+        springLen: 250,     // natural spring length
         massRadius: 30,   // radius of mass
         X : 275,          // x position of motion
         lightX : 10,     // x position of light source
         lightY : 150,
-        springN : 7,   // Anzahl Windungen
+        springN : 9,   // Anzahl Windungen, muss ungerade sein
+        windMinHeight: 3,  // Minimale Hoehe einer Windung
         springR : 20,  // Radius der Feder
         smallWheelR : 8,  // Radius kleines Antriebsrad
         bigWheelR : 30,  // Radius großes Antriebsrad
