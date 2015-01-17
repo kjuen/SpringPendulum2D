@@ -45,14 +45,17 @@ $(function() {
             Spring.Prog.state = Spring.Prog.STOP;
             $(this).button( "option", "label", "Start" );
             $(this).button( "option", "icons", { primary: "ui-icon-play"});
-            enableElements();
+            enableSliders();
+            $("#mode-select").prop('disabled', false);
             $(this).next().button("disable");
+            Spring.Graphs.needUpdate = true;
         } else if (Spring.Prog.state !== Spring.Prog.RUN) {
             // turn STOP state to RUN state
             Spring.Prog.state = Spring.Prog.RUN;
             $(this).button( "option", "label", "Stop" );
             $(this).button( "option", "icons", { primary: "ui-icon-stop"});
-            disableElements();
+            disableSliders();
+            $("#mode-select").prop('disabled', true);
             $(this).next().button("enable");
         }
 
@@ -63,7 +66,8 @@ $(function() {
         // icons: { primary: "ui-icon-pause"}
     }).click( function(event){
         $(this).button("disable");
-        disableElements();  // in pause state sliders must not be changed
+        disableSliders();  // in pause state sliders must not be changed
+        $("#mode-select").prop('disabled', true);
         Spring.Prog.state = Spring.Prog.PAUSE;
         $(this).prev().button( "option", "label", "Start" );
         $(this).prev().button( "option", "icons", { primary: "ui-icon-play"});
@@ -170,24 +174,28 @@ $(function() {
     $("#extforce-freq").val($("#extforce-freq-slider").slider("value"));
 
 
-    function enableElements() {
+    function enableSliders() {
         $("#eigenfrequency-slider").slider("enable");
         $("#damping-slider").slider("enable");
-        $("#initpos-slider").slider("enable");
-        $("#initveloc-slider").slider("enable");
         $("#extforce-amp-slider").slider("enable");
-        $("#extforce-freq-slider").slider("enable");
-        $("#mode-select").prop('disabled', false);
+        if(Spring.dyn.mode === Spring.dyn.SINE_RESP) {
+            $("#initpos-slider").slider("enable");
+            $("#initveloc-slider").slider("enable");
+            $("#extforce-freq-slider").slider("enable");
+        } else {
+            $("#initpos-slider").slider("disable");
+            $("#initveloc-slider").slider("disable");
+            $("#extforce-freq-slider").slider("disable");
+        }
     }
 
-    function disableElements() {
+    function disableSliders() {
         $("#eigenfrequency-slider").slider("disable");
         $("#damping-slider").slider("disable");
         $("#initpos-slider").slider("disable");
         $("#initveloc-slider").slider("disable");
         $("#extforce-amp-slider").slider("disable");
         $("#extforce-freq-slider").slider("disable");
-        $("#mode-select").prop('disabled', true);
     }
 
 
@@ -225,7 +233,8 @@ $(function() {
     });
 
     // Disable all sliders for the first time
-    disableElements();
+    disableSliders();
+    $("#mode-select").prop('disabled', true);
     var canvas = document.getElementById("mycanvas");
     var divcanvas = $("#canvas-container");
 
@@ -311,21 +320,13 @@ $(function() {
         var selId = $(this).find(":selected").attr("id");
         if(selId  === "text-impresp") {
             Spring.dyn.mode = Spring.dyn.IMP_RESP;
-            $("#initpos-slider").slider("disable");
-            $("#initveloc-slider").slider("disable");
-            $("#extforce-freq-slider").slider("disable");
         } else if (selId  === "text-stepresp") {
             Spring.dyn.mode = Spring.dyn.STEP_RESP;
-            $("#initpos-slider").slider("disable");
-            $("#initveloc-slider").slider("disable");
-            $("#extforce-freq-slider").slider("disable");
         } else {
             Spring.dyn.mode = Spring.dyn.SINE_RESP;
-            $("#initpos-slider").slider("enable");
-            $("#initveloc-slider").slider("enable");
-            $("#extforce-freq-slider").slider("enable");
         }
         setLang();
         Spring.Graphs.needUpdate = true;
+        enableSliders();
     });
 });

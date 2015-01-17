@@ -384,6 +384,7 @@ Spring.Graphs.update = function (force) {
     "use strict";
     force = (force === undefined ? false : force);
 
+    // Time domain
     if(force || $(this.timeDomainGraphBoard.containerObj).is(":hidden") === false) {
         this.timeDomainGraph.Y = Spring.dyn.positionFunc;
         this.timeDomainExtForceGraph.Y = Spring.dyn.extForce;
@@ -402,6 +403,7 @@ Spring.Graphs.update = function (force) {
         this.timeDomainGraphBoard.fullUpdate();
     }
 
+    // Frequency domain
     if(force || $(this.freqDomainMagGraphBoard.containerObj).is(":hidden") === false)
     {
         this.freqDomainMagGraph.Y = Spring.dyn.magResp;
@@ -440,6 +442,7 @@ Spring.Graphs.update = function (force) {
         this.freqDomainPhaseGraphBoard.fullUpdate();
     }
 
+    // P
     if(force || $(this.poleZeroGraphBoard.containerObj).is(":hidden") === false) {
         this.poleZeroPole1.setPosition(JXG.COORDS_BY_USER , Spring.dyn.poles[0]);
         this.poleZeroPole2.setPosition(JXG.COORDS_BY_USER , Spring.dyn.poles[1]);
@@ -457,13 +460,15 @@ function render() {
         Spring.Graphs.needUpdate = false;
         Spring.Graphs.update();
         Spring.Graphs.resize();
+        Spring.redraw();
     }
 
     if(Spring.Prog.state === Spring.Prog.RUN) {
+        Spring.redraw();
 
         var t = Spring.Prog.getSimTime();
-        Spring.redraw(t, Spring.dyn.mode === Spring.dyn.IMP_RESP);
 
+        // update position of sliders in time domain plot
         if(Spring.Prog.timeDomainTrace) {
             Spring.Graphs.timeDomainGlider.visible(true);
             Spring.Graphs.timeDomainExtForceGlider.visible(true);

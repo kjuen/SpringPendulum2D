@@ -42,8 +42,10 @@ var Spring = {
         getSimTime : function() {
             if(this._state === this.RUN) {
                 return (Date.now() - this._startTime - this._offset)/1000;
-            } else {
+            } else if(this._state === this.PAUSE) {
                 return (this._stopTime - this._offset) / 1000;
+            } else { // this._state === STOP
+                return -this._offset / 1000;
             }
         }
     },

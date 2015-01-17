@@ -215,7 +215,7 @@ Spring.drawDeltaTrace = function(height, yOffset, t, strokeStyle) {
     ctx.beginPath();
     ctx.moveTo(x, yOffset);
     ctx.lineTo(Spring.Consts.X, yOffset);
-    if(t > 0 && peakX > 0) {
+    if(t > 0 && peakX > 0 && Spring.dyn.u0 > 0) {
         // draw the delta peak
         ctx.moveTo(peakX, yOffset);
         ctx.lineTo(peakX, yOffset-height);
@@ -229,10 +229,10 @@ Spring.drawDeltaTrace = function(height, yOffset, t, strokeStyle) {
 
 /**
  * redraw everything at time t
- * @param {number} t current time
- * @param {boolean} deltaForce flag telling if force is a delta peak
 */
-Spring.redraw = function(t, deltaForce) {
+Spring.redraw = function() {
+    var t = Spring.Prog.getSimTime();
+    var deltaForce = Spring.dyn.mode === Spring.dyn.IMP_RESP;
     Spring.ctx.clearRect(0,0,Spring.ctx.canvas.width, Spring.ctx.canvas.height);
     var y = Spring.Consts.yMount + Spring.Consts.springLen - Spring.dyn.positionFunc(t);
     var yup = Spring.Consts.yMount - Spring.dyn.extForce(t);

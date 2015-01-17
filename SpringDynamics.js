@@ -58,8 +58,6 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     Object.defineProperty(this, 'mode', {
         get: function() {return _mode;},
         set: function(newMode) {
-            console.log('Setting mode to ', newMode);
-
             _mode = newMode;
             that.extForce = getExtForce();
             that.positionFunc = getPositionFunc();
