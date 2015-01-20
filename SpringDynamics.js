@@ -29,9 +29,9 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     var _SINE_RESP = 0;
     Object.defineProperty(this, 'SINE_RESP', { get: function() {return _SINE_RESP;}});
     var _IMP_RESP = 1;
-    Object.defineProperty(this, '_IMP_RESP', { get: function() {return _IMP_RESP;}});
+    Object.defineProperty(this, 'IMP_RESP', { get: function() {return _IMP_RESP;}});
     var _STEP_RESP = 2;
-    Object.defineProperty(this, '_STEP_RESP', { get: function() {return _IMP_RESP;}});
+    Object.defineProperty(this, 'STEP_RESP', { get: function() {return _STEP_RESP;}});
 
     var _TOL = 0.00001;
 
