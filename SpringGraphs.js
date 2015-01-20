@@ -372,7 +372,8 @@ Spring.Graphs.poleZeroPole2 = Spring.Graphs.poleZeroGraphBoard.create('point',
 */
 Spring.Graphs.resize = function() {
     "use strict";
-    this.graphBoardsArray.forEach(function (board){
+    console.log("resizing");
+    Spring.Graphs.graphBoardsArray.forEach(function (board){
         if($(board.containerObj).is(":hidden") === false) {
             var ar = board.canvasHeight / board.canvasWidth;
 
@@ -384,6 +385,7 @@ Spring.Graphs.resize = function() {
         }
     });
 };
+window.onresize=Spring.Graphs.resize;   // doesn't work as expected :-(
 
 
 /**
