@@ -44,11 +44,11 @@ Spring.drawMass = function(y, withLighSource) {
 
 /**
  * draw the entire antrieb.
- * @param {number} om angular frequency of turning wheels
  * @param {number} t current time
  * @param {number} yup vertical position of mount point of spring
 */
-Spring.drawAntrieb = function(om, t, yup) {
+Spring.drawAntrieb = function(t, yup) {
+    // Static part of the drawing
     var ctx = this.ctx;
     ctx.fillStyle = "rgba(60,10,10,0.8)";
     ctx.shadowColor = "rgba(60, 10, 10, 0.3)";
@@ -89,16 +89,29 @@ Spring.drawAntrieb = function(om, t, yup) {
     ctx.fill();
 
 
+    // Dynamic part:
+    var phi;
+    switch (Spring.dyn.mode) {
+    case Spring.dyn.IMP_RESP:
+        phi = 0;
+        break;
+    case Spring.dyn.STEP_RESP:
+        phi = 0;
+        phi = t>0 ? -1 : 0;//  + 2*Math.PI/2;
+        break;
+    default:  // SINE_RESP
+        phi = t>0 ? -Spring.dyn.we*t : 0;//  + 2*Math.PI/2;
+        break;
+    }
     var phase = Spring.Consts.bigWheelR / Spring.Consts.distWheels;
-    var dotX = bigWheelX - 0.8*Spring.Consts.bigWheelR*Math.sin(om * t - phase);
-    var dotY = bigWheelY - 0.8*Spring.Consts.bigWheelR*Math.cos(om * t - phase);
+    var dotX = bigWheelX - 0.8*Spring.Consts.bigWheelR*Math.sin(phi - phase);
+    var dotY = bigWheelY - 0.8*Spring.Consts.bigWheelR*Math.cos(phi - phase);
     ctx.beginPath();
     ctx.moveTo(dotX, dotY);
     ctx.arc(dotX, dotY, 4, 0, 2*Math.PI);
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fill();
 
-    var phi = om*t;//  + 2*Math.PI/2;
     var psi = (1-Math.cos(phi))/(Spring.Consts.distWheels/(0.8*Spring.Consts.bigWheelR) + Math.sin(phi));
     ctx.beginPath();
     ctx.moveTo(dotX, dotY);
@@ -237,7 +250,7 @@ Spring.redraw = function() {
     var y = Spring.Consts.yMount + Spring.Consts.springLen - Spring.dyn.positionFunc(t);
     var yup = Spring.Consts.yMount - Spring.dyn.extForce(t);
 
-    Spring.drawAntrieb(-Spring.dyn.we, t, yup);
+    Spring.drawAntrieb(t, yup);
     Spring.drawSpring(yup, y - Spring.Consts.massRadius);
     Spring.drawMass(y);
     if(Spring.Prog.timeDomainTrace) {
