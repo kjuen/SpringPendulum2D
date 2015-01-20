@@ -47,6 +47,16 @@ Spring.Graphs.timeDomainExtForceGraph =
                                               {strokeColor:'red',
                                                strokeWidth:2,
                                                needsRegularUpdate: false, highlight: false});
+Spring.Graphs.timeDomainExtForceDelta =
+    Spring.Graphs.timeDomainGraphBoard.create('arrow',
+                                              [[0, 0],
+                                               [function(){return 0;},
+                                                function() {return Spring.dyn.u0;}]],
+                                              {strokeColor:'red',
+                                               strokeWidth:2,
+                                               needsRegularUpdate: false,
+                                               highlight: false,
+                                               visible: false});  // only turn on for delta force
 
 Spring.Graphs.timeDomainGlider =
     Spring.Graphs.timeDomainGraphBoard.create('point',

@@ -320,10 +320,13 @@ $(function() {
         var selId = $(this).find(":selected").attr("id");
         if(selId  === "text-impresp") {
             Spring.dyn.mode = Spring.dyn.IMP_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:true});
         } else if (selId  === "text-stepresp") {
             Spring.dyn.mode = Spring.dyn.STEP_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:false});
         } else {
             Spring.dyn.mode = Spring.dyn.SINE_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:false});
         }
         setLang();
         Spring.Graphs.needUpdate = true;
