@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="SpringPendulum.css" />
 
   </head>
-  <body onresize="Spring.Graphs.resize()">
+  <body>
     <div id="container">
       <div id="left">
         <div id="canvas-container" class="ui-widget-content ui-corner-all"
@@ -32,7 +32,6 @@
           </label>
         </div>
 
-
             <canvas id="mycanvas">
               Your browser does not have support for Canvas.
             </canvas>
@@ -43,8 +42,8 @@
         <div style="padding: 1em">
           <div id="debug"></div>
           <div id="control-buttons">
-            <button id="button-start">Start</button>
-            <button id="button-stop">Stop</button>
+            <button id="button-start">Stop</button>
+            <button id="button-pause">Pause</button>
           </div>
           <br>
           <div id="tabs">
@@ -67,7 +66,7 @@
                 <label for="mode-selector">Mode: </label>
                 <select id="mode-select">
                   <option id="text-sineforceinitcond" selected>
-                    <span >Sine Force and Initial Conditions</span>
+                    <span>Sine Force and Initial Conditions</span>
                   </option>
                   <option id="text-impresp">Impulse Response</option>
                   <option id="text-stepresp">Step Response</option>
