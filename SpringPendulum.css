@@ -58,6 +58,7 @@ body {
     font-weight: bold;
 }
 
+
 #control-buttons button {
     width: 49%;
     height: 50px;
@@ -65,9 +66,9 @@ body {
 #button-start {
     margin-right: 1%;
 }
-#button-pause {
-    margin-left: 1%;
-}
+/* #button-pause { */
+/*     margin-right: 1%; */
+/* } */
 
 
 #mode-selector {
