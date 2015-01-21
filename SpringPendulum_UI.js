@@ -302,20 +302,25 @@ $(function() {
             $("#"+id).text(Spring.langObj.text[id].toLocaleString());
         }
         // finally, set label of language button
-        $('#button-lang').text(Spring.langObj.otherLang);
+        // $('#button-lang').text(Spring.langObj.otherLang);
+        $('#button-lang').button("option", "label", Spring.langObj.otherLang);
     }
 
-    // Initialization basedd on url hash tag
-    if(window.location.hash.length == 3 &&
-       window.location.hash.substring(1,3).toLocaleLowerCase() == "en")
-        Spring.langObj = lang_en;
-    else Spring.langObj = lang_de;
-    setLang();
-
-    $("#button-lang").click(function() {
+    $("#button-lang").button().click(function() {
         Spring.langObj = (Spring.langObj === lang_de) ? lang_en : lang_de;
         setLang();
     });
+
+    // Initialization based on search string tag
+    if(window.location.search.localeCompare("?lang=en")===0) {
+        // if(window.location.hash.length == 3 &&
+       // window.location.hash.substring(1,3).toLocaleLowerCase() == "en")
+        Spring.langObj = lang_en;
+    }
+    else Spring.langObj = lang_de;
+    setLang();
+
+
     $("#mode-select").click(function() {
         var selId = $(this).find(":selected").attr("id");
         if(selId  === "text-impresp") {
