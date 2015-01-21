@@ -2,95 +2,135 @@
 
 <html lang="en">
   <head>
-    <title>Spring Pendulum</title>
+    <title id="text-title">Spring Pendulum</title>
     <meta charset="utf-8">
 
     <link rel="stylesheet" type="text/css" href="all.css" />
 
   </head>
-  <body onresize="Spring.Graphs.resize()">
+  <body>
     <div id="container">
       <div id="left">
         <div id="canvas-container" class="ui-widget-content ui-corner-all"
-             style="height: calc(100% - 4em - 2px)">
-          <input type="checkbox" id="timedomain-trace" style="float:right;" checked="checked">
-          <label for="timedomain-trace" class="JXGtext" style="font-size: 14px; float:right; font-weight: bold;">Trace</label>
-          <canvas id="mycanvas">
-            Your browser does not have support for Canvas.
-          </canvas>
+              style="height: calc(100% - 4em - 2px)">
+
+        <div id="headline-container">
+          <button id="button-lang"
+                  style="font-size: 12px; float:left;">Deutsch</button>
+          <span id="text-headline-left">Spring Pendulum</span>
+          <input type="checkbox" id="timedomain-trace"
+                 checked="checked">
+          <label for="timedomain-trace"
+                 style="font-size: 12px; float:right;">
+            <span id="text-trace">Trace</span>
+          </label>
         </div>
+
+            <canvas id="mycanvas">
+              Your browser does not have support for Canvas.
+            </canvas>
+          </div>
       </div>
 
       <div id="right">
         <div style="padding: 1em">
           <div id="debug"></div>
           <div id="control-buttons">
-            <button id="button-start">Start</button>
-            <button id="button-stop">Stop</button>
+            <button id="button-start">Stop</button>
+            <button id="button-pause">Pause</button>
           </div>
           <br>
           <div id="tabs">
-            <h3>Parameters</h3>
+            <h3><span id="text-parameters">Parameters</span></h3>
             <div class="sliders">
-              <label for="eigenfrequency">Eigenfrequency <i>ω<sub>0</sub></i>:</label>
+              <label for="eigenfrequency">
+                <span id="text-eigenfreq">Eigenfrequency</span> <i>ω<sub>0</sub></i>:
+              </label>
               <input type="text" id="eigenfrequency" readonly>
               <div id="eigenfrequency-slider"></div>
               <br>
-              <label for="damping">Damping <i>d</i>:</label>
+              <label for="damping"><span id="text-damping">Damping</span> <i>d</i>:</label>
               <input type="text" id="damping" readonly>
               <div id="damping-slider"></div>
             </div>
 
-            <h3>Initial Conditions / Force</h3>
-            <div class="sliders">
-              <label for="initpos">Initial Position <i>y<sub>0</sub></i>:</label>
-              <input type="text" id="initpos" readonly>
-              <div id="initpos-slider"></div>
-              <br>
-              <label for="initveloc">Initial Velocity <i>v<sub>0</sub></i>:</label>
-              <input type="text" id="initveloc" readonly>
-              <div id="initveloc-slider"></div>
-              <br>
-              <label for="extforce-amp">External Force's Amplitude <i>u<sub>0</sub></i>:</label>
-              <input type="text" id="extforce-amp" readonly>
-              <div id="extforce-amp-slider"></div>
-              <br>
-              <label for="extforce-freq">External Force's Frequency <i>ω<sub>e</sub></i>:</label>
-              <input type="text" id="extforce-freq" readonly>
-              <div id="extforce-freq-slider"></div>
-            </div>
+            <h3><span id="text-initcondforce">Initial Conditions / Force</span></h3>
+            <div>
+              <div id="mode-selector">
+                <label for="mode-selector">Mode: </label>
+                <select id="mode-select">
+                  <option id="text-sineforceinitcond" selected>
+                    <span>Sine Force and Initial Conditions</span>
+                  </option>
+                  <option id="text-impresp">Impulse Response</option>
+                  <option id="text-stepresp">Step Response</option>
+                </select>
+              </div>
 
-            <h3>Time Domain</h3>
+              <div class="sliders">
+                <label for="initpos">
+                  <span id="text-initpos">Initial Position</span> <i>y<sub>0</sub></i>:
+                </label>
+                <input type="text" id="initpos" readonly>
+                <div id="initpos-slider"></div>
+                <br>
+                <label for="initveloc">
+                  <span id="text-initvel">Initial Velocity</span> <i>v<sub>0</sub></i>:
+                </label>
+                <input type="text" id="initveloc" readonly>
+                <div id="initveloc-slider"></div>
+                <br>
+                <label for="extforce-amp">
+                  <span id="text-forceamp">External Force's Amplitude</span> <i>u<sub>0</sub></i>:
+                </label>
+                <input type="text" id="extforce-amp" readonly>
+                <div id="extforce-amp-slider"></div>
+                <br>
+                <label for="extforce-freq">
+                  <span id="text-extforcefreq">External Force's Frequency</span> <i>ω<sub>e</sub></i>:
+                </label>
+                <input type="text" id="extforce-freq" readonly>
+                <div id="extforce-freq-slider"></div>
+              </div>
+            </div>
+            <h3><span id="text-timedomain">Time Domain</span></h3>
             <div>
               <div id="timeDomainToolbar" class="graphToolbar ui-widget-header ui-corner-all">
               </div>
               <div id="timeDomainGraph" class="jxgbox"></div>
             </div>
 
-            <h3>Frequency Domain</h3>
+            <h3><span id="text-freqdomain">Frequency Domain</span></h3>
             <div>
               <div id="freqDomainToolbar" class="graphToolbar ui-widget-header ui-corner-all">
                 <span id="freqdomain-mag-phase">
-                  <input type="radio" id="freqdomain-mag" name="freqdomain-mag-phase" checked="checked"><label for="freqdomain-mag">Mag.</label>
-                  <input type="radio" id="freqdomain-phase" name="freqdomain-mag-phase"><label for="freqdomain-phase">Phase</label>
+                  <input type="radio" id="freqdomain-mag" name="freqdomain-mag-phase"
+                         checked="checked">
+                  <label for="freqdomain-mag"><span id="text-mag">Mag.</span></label>
+                  <input type="radio" id="freqdomain-phase" name="freqdomain-mag-phase">
+                  <label for="freqdomain-phase">Phase</label>
                 </span>
 
-                <input type="checkbox" id="freqdomain-mag-db"><label for="freqdomain-mag-db">dB</label>
+                <input type="checkbox" id="freqdomain-mag-db">
+                <label for="freqdomain-mag-db">dB</label>
               </div>
               <div id="freqDomainMagGraph" class="jxgbox"></div>
               <div id="freqDomainMagDbGraph" class="jxgbox"></div>
               <div id="freqDomainPhaseGraph" class="jxgbox"></div>
             </div>
 
-            <h3>Pole-Zero Map</h3>
+            <h3><span id="text-polezero">Pole-Zero Map</span></h3>
             <div>
               <div id="poleZeroGraph" class="jxgbox"></div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
     <script type="text/javascript" src="all.js"></script>
+
+
   </body>
 </html>
