@@ -1,6 +1,6 @@
 /**
  * @author K. Juenemann / https://github.com/kjuen
-*/
+ */
 
 /*global Spring */
 
@@ -17,192 +17,180 @@
  * @param {number} v0 initial speed y'(0) (default: 0)
  * @param {number} u0 amplitude of suspension point (default: 0)
  * @param {number} we external frequency (default: 0)
+ * @param {number} mode integer determining the kind of position function
+ *                      0 (default): Response to sine force and initial conditions
+ *                      1: impulse response
+ *                      2: step response
  */
-Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
+Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we, _mode) {
     "use strict";
+
+    // mode values
+    var _SINE_RESP = 0;
+    Object.defineProperty(this, 'SINE_RESP', { get: function() {return _SINE_RESP;}});
+    var _IMP_RESP = 1;
+    Object.defineProperty(this, 'IMP_RESP', { get: function() {return _IMP_RESP;}});
+    var _STEP_RESP = 2;
+    Object.defineProperty(this, 'STEP_RESP', { get: function() {return _STEP_RESP;}});
+
+    var _TOL = 0.00001;
 
     // set default values
     _y0 = (_y0 === undefined ? 0 : _y0);
     _v0 = (_v0 === undefined ? 0 : _v0);
     _u0 = (_u0 === undefined ? 0 : _u0);
     _we = (_we === undefined ? 0 : _we);
+    _mode = (_mode === undefined ? _SINE_RESP : _mode);
+
+
+
+    //* Function properties
+    var that = this;
+    that.extForce = getExtForce();
+    that.positionFunc = getPositionFunc();
+    that.magResp = getMagResp();
+    that.magRespDb = getMagRespDb();
+    that.phaseResp = getPhaseResp();
+    that.poles = getPoles();
 
     //* Parameters
-    var _TOL = 0.00001;
-    Object.defineProperty(this, 'TOL', {
-        get: function() {return _TOL;}
-    });
 
+    Object.defineProperty(this, 'mode', {
+        get: function() {return _mode;},
+        set: function(newMode) {
+            _mode = newMode;
+            that.extForce = getExtForce();
+            that.positionFunc = getPositionFunc();
+        }
+    });
 
 
     Object.defineProperty(this, 'w0', {
         get: function() {return _w0;},
         set: function(neww0) {
             _w0=neww0;
-            _positionFuncNeedsUpdate = true;
-            _impRespNeedsUpdate = true;
-            _stepRespNeedsUpdate = true;
-            _magRespNeedsUpdate = true;
-            _magRespDbNeedsUpdate = true;
-            _phaseRespNeedsUpdate = true;
-            _polesNeedsUpdate = true;
+            that.extForce = getExtForce();
+            that.positionFunc = getPositionFunc();
+            that.magResp = getMagResp();
+            that.magRespDb = getMagRespDb();
+            that.phaseResp = getPhaseResp();
+            that.poles = getPoles();
+
         }
     });
     Object.defineProperty(this, 'd', {
         get: function() {return _d;},
         set: function(newd) {
             _d=newd;
-            _positionFuncNeedsUpdate = true;
-            _impRespNeedsUpdate = true;
-            _stepRespNeedsUpdate = true;
-            _magRespNeedsUpdate = true;
-            _magRespDbNeedsUpdate = true;
-            _phaseRespNeedsUpdate = true;
-            _polesNeedsUpdate = true;
+            that.extForce = getExtForce();
+            that.positionFunc = getPositionFunc();
+            that.magResp = getMagResp();
+            that.magRespDb = getMagRespDb();
+            that.phaseResp = getPhaseResp();
+            that.poles = getPoles();
         }
     });
     Object.defineProperty(this, 'y0', {
         get: function() {return _y0;},
         set: function(newy0) {
             _y0=newy0;
-            _positionFuncNeedsUpdate = true;
+            that.positionFunc = getPositionFunc();
         }
     });
     Object.defineProperty(this, 'v0', {
         get: function() {return _v0;},
         set: function(newv0) {
             _v0=newv0;
-            _positionFuncNeedsUpdate = true;
+            that.positionFunc = getPositionFunc();
         }
     });
     Object.defineProperty(this, 'u0', {
         get: function() {return _u0;},
         set: function(newu0) {
             _u0=newu0;
-            _positionFuncNeedsUpdate = true;
+            that.extForce = getExtForce();
+            that.positionFunc = getPositionFunc();
         }
     });
     Object.defineProperty(this, 'we', {
         get: function() {return _we;},
         set: function(newwe) {
             _we=newwe;
-            _positionFuncNeedsUpdate = true;
+            that.extForce = getExtForce();
+            that.positionFunc = getPositionFunc();
         }
     });
-
-
-    //* external force
-    Object.defineProperty(this, 'extForce', {
-        get: function() {
-            return function(t) {
-                return _u0 * Math.sin(_we*t);
-            };
-        }
-    });
-
-
-    //* Position function
-    var _positionFunc = getPositionFunc();
-    var _positionFuncNeedsUpdate = false;
-    Object.defineProperty(this, 'positionFunc', {
-        get: function() {
-            if(_positionFuncNeedsUpdate) {
-                _positionFunc = getPositionFunc();
-                _positionFuncNeedsUpdate = false;
-            }
-            return _positionFunc;
-        }
-    });
-
-    //* Impulse response
-    var _impResp = getImpResp();
-    var _impRespNeedsUpdate = false;
-    Object.defineProperty(this, 'impResp', {
-        get: function() {
-            if(_impRespNeedsUpdate) {
-                _impResp = getImpResp();
-                _impRespNeedsUpdate = false;
-            }
-            return _impResp;
-        }
-    });
-
-    //* Step response
-    var _stepResp = getStepResp();
-    var _stepRespNeedsUpdate = false;
-    Object.defineProperty(this, 'stepResp', {
-        get: function() {
-            if(_stepRespNeedsUpdate) {
-                _stepResp =getStepResp();
-                _stepRespNeedsUpdate = false;
-            }
-            return _stepResp;
-        }
-    });
-
-    //* Magnitude and phase response
-    var _magResp = getMagResp();
-    var _magRespNeedsUpdate = false;
-    Object.defineProperty(this, 'magResp', {
-        get: function() {
-            if(_magRespNeedsUpdate) {
-                _magResp = getMagResp();
-                _magRespNeedsUpdate = false;
-            }
-            return _magResp;
-        }
-    });
-
-    var _magRespDb = getMagRespDb();
-    var _magRespDbNeedsUpdate = false;
-    Object.defineProperty(this, 'magRespDb', {
-        get: function() {
-            if(_magRespDbNeedsUpdate) {
-                _magRespDb = getMagRespDb();
-                _magRespDbNeedsUpdate = false;
-            }
-            return _magRespDb;
-        }
-    });
-
-
-    var _phaseResp = getPhaseResp();
-    var _phaseRespNeedsUpdate = false;
-    Object.defineProperty(this, 'phaseResp', {
-        get: function() {
-            if(_phaseRespNeedsUpdate) {
-                _phaseResp = getPhaseResp();
-                _phaseRespNeedsUpdate = false;
-            }
-            return _phaseResp;
-        }
-    });
-
-
-    //* Poles
-    var _poles = getPoles();
-    var _polesNeedsUpdate = false;
-    Object.defineProperty(this, 'poles', {
-        get: function() {
-            if(_polesNeedsUpdate) {
-                _poles = getPoles();
-                _polesNeedsUpdate = false;
-            }
-            return _poles;
-        }
-    });
-
 
 
 
     //* The actual calculations
+
+     function stepFunc(t) {
+         if(t<0) return 0;
+         else return _u0;
+     }
+
+    // approxiamte delta function as narrow rectangle
+    var deltaHeight = 20;
+    function deltaFunc(t) {
+        if((t>=0) && (t<=1/deltaHeight)) return _u0*deltaHeight;
+        else return 0;
+    }
+
+    function sineFunc(t) {
+        if(t<0) return 0;
+        else return _u0* Math.sin(_we*t);
+    }
+
+
+    /**
+     * creates function calculating the external force as function of t,
+     * depending on the value of the mode property. The corresponding system response
+     * is stored in the positionFunc field.
+     * @returns {function} function of a single parameter t giving the external at time t
+     */
+    function getExtForce() {
+        switch(_mode) {
+        case _IMP_RESP:
+            return deltaFunc;
+        case _STEP_RESP:
+            return stepFunc;
+        default:
+            return sineFunc;
+        }
+    }
+
+    /**
+     * creates function y(t) calculating the pendulum position as function of t,
+     * depending on the value of the mode property. This function is the system response
+     * to the external force stored in the extForce field.
+     * @returns {function} function y(t) of a single parameter t giving the pendulum position at time t
+     */
+    function getPositionFunc() {
+        switch(_mode) {
+        case _IMP_RESP:
+            return getImpResp();
+        case _STEP_RESP:
+            return getStepResp();
+        default:
+            var f1 = getInitCondResp();
+            var f2 = getSineResp();
+            return function(t) {
+                if(t<0)
+                    return _y0;
+                else
+                    return f1(t) + f2(t);
+            };
+
+        }
+    }
 
     /**
      * creates function y(t) calculating the pendulum position as function of t for given
      * initial conditions y(0) = y0 and y'(0) = v0 without external force.
      * @returns {function} function y(t) of a single parameter t giving the pendulum position at time t
      */
-    function getInitCondFunc() {
+    function getInitCondResp() {
         var ret;
         var tmp, tmp2, tmp3, tmp4, tmp5;
 
@@ -238,7 +226,8 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
 
 
     /**
-     * creates function h(t) calculating the impulse response of the pendulum
+     * creates function h(t) calculating the impulse response of the pendulum, scaled by u0.
+     * I.e. h(t) is the system response to u0 * delta(t).
      * @returns {function} function h(t) of a single parameter t giving the pendulum position at time t
      */
     function getImpResp() {
@@ -253,7 +242,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
             tmp3 = _w0 / Math.sqrt(1-_d*_d);
             ret = function(t) {
                 if(t<0) return 0;
-                else return tmp3 * Math.exp(-tmp2*t)*Math.sin(tmp*t);
+                else return _u0 * tmp3 * Math.exp(-tmp2*t)*Math.sin(tmp*t);
             };
         } else if(_d > 1 + _TOL) {
             // strong friction
@@ -263,21 +252,22 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
             tmp4 = _w0*(-tmp-_d);
             ret = function(t) {
                 if(t<0) return 0;
-                else return tmp2*(Math.exp(tmp3*t) - Math.exp(tmp4*t));
+                else return _u0 * tmp2*(Math.exp(tmp3*t) - Math.exp(tmp4*t));
             };
         } else {
             // limit case
             ret = function(t) {
                 if(t<0) return 0;
-                else return t*_w0*_w0*Math.exp(-_w0*t);
+                else return _u0* t*_w0*_w0*Math.exp(-_w0*t);
             };
         }
         return ret;
     }
 
     /**
-     * creates function h(t) calculating the impulse response of the pendulum
-     * @returns {function} function h(t) of a single parameter t giving the pendulum position at time t
+     * creates function g(t) calculating the step response of the pendulum, scaled by u0.
+     * I.e. g(t) is the system response to u0 * sigma(t).
+     * @returns {function} function g(t) of a single parameter t giving the pendulum position at time t
      */
     function getStepResp(){
         var ret;
@@ -290,7 +280,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
             tmp3 = _d/tmp;
             ret = function(t) {
                 if(t<0) return 0;
-                else return 1 - Math.exp(-_d*_w0*t)*(Math.cos(tmp2*t) + tmp3*Math.sin(tmp2*t));
+                else return _u0*(1 - Math.exp(-_d*_w0*t)*(Math.cos(tmp2*t) + tmp3*Math.sin(tmp2*t)));
             };
         } else if(_d > 1 + _TOL) {
             // strong friction
@@ -300,13 +290,14 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
             tmp4 = _w0*tmp;
             ret = function(t) {
                 if(t<0) return 0;
-                else return 1- 0.5*Math.exp(-_d*_w0*t)*(tmp2* Math.exp(tmp4*t) + tmp3* Math.exp(-tmp4*t) );
+                else return _u0*(1- 0.5*Math.exp(-_d*_w0*t)*(tmp2* Math.exp(tmp4*t) +
+                                                             tmp3* Math.exp(-tmp4*t) ));
             };
         } else {
             // limit case
             ret = function(t) {
                 if(t<0) return 0;
-                else return 1-(t*_w0+1)*Math.exp(-_w0*t);
+                else return _u0*(1-(t*_w0+1)*Math.exp(-_w0*t));
             };
         }
         return ret;
@@ -319,7 +310,7 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
      * upper suspension point of the pendulum.
      * @returns {function} function y(t) of a single parameter t giving the pendulum position at time t
      */
-    function getExtForceFunc(){
+    function getSineResp(){
         var ret;
         var tmp, tmp2, tmp3, tmp4;
 
@@ -363,22 +354,6 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
         return ret;
     }
 
-
-    /**
-     * creates function y(t) calculating the pendulum position as function of t with
-     * initial conditions and with external force exerted by motion u(t) = u0*sin(_we*t) of the
-     * upper suspension point of the pendulum. It is just the sum of getInitCondFunc
-     * and getExtForceFunc.
-     * @returns {function} function y(t) of a single parameter t giving the pendulum position at time t
-     */
-    function getPositionFunc() {
-        var f1 = getInitCondFunc();
-        var f2 = getExtForceFunc();
-        var ret = function(t) {
-            return f1(t) + f2(t);
-        };
-        return ret;
-    }
 
 
     /**
@@ -476,6 +451,12 @@ Spring.Dynamics = function (_w0, _d, _y0, _v0, _u0, _we) {
     }
 
 };
+
+
+Spring.Dynamics.prototype.SINE_RESP = 0;
+Spring.Dynamics.prototype.IMP_RESP = 1;
+Spring.Dynamics.prototype.STEP_RESP = 2;
+
 
 // create SpringDynamics object with useful default parameters
 Spring.dyn = new Spring.Dynamics(

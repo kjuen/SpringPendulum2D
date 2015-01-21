@@ -9,14 +9,12 @@
 $(function() {
     "use strict";
 
+    //* Left-right split
     $("#container").split({
         orientation: 'vertical',
         limit: 350,    // minimum width of plots-panel
         position: '60%',    // size ratio of panels
         invisible: true,
-        // onDrag: function () {
-        //     resize_canvas();
-        // },
         onDragEnd: function () {
             Spring.Graphs.resize();
         }
@@ -35,31 +33,47 @@ $(function() {
         }
     });
 
-    // init buttons
+    //* init buttons
     $("#control-buttons").buttonset();
 
     $("#button-start").button({
-        icons: { primary: "ui-icon-play"},
-        disabled: true
+        icons: { primary: "ui-icon-stop"},
+        label: "Stop"
     }).click( function(event){
-        $(this).button("disable");
-        $(this).next().button("enable");
-        disableSliders();
-        Spring.ProgState.runningFlag = true;
-        Spring.ProgState.startTime = undefined;
+        if(Spring.Prog.state === Spring.Prog.RUN) {
+            // turn RUN state to STOP state
+            Spring.Prog.state = Spring.Prog.STOP;
+            $(this).button( "option", "label", "Start" );
+            $(this).button( "option", "icons", { primary: "ui-icon-play"});
+            enableSliders();
+            $("#mode-select").prop('disabled', false);
+            $(this).next().button("disable");
+            Spring.Graphs.needUpdate = true;
+        } else if (Spring.Prog.state !== Spring.Prog.RUN) {
+            // turn STOP state to RUN state
+            Spring.Prog.state = Spring.Prog.RUN;
+            $(this).button( "option", "label", "Stop" );
+            $(this).button( "option", "icons", { primary: "ui-icon-stop"});
+            disableSliders();
+            $("#mode-select").prop('disabled', true);
+            $(this).next().button("enable");
+        }
+
     });
 
-    $("#button-stop").button({
-        icons: { primary: "ui-icon-stop"}
+    $("#button-pause").button({
+        icons: { primary: "ui-icon-pause"}
+        // icons: { primary: "ui-icon-pause"}
     }).click( function(event){
         $(this).button("disable");
-        $(this).prev().button("enable");
-        enableSliders();
-        Spring.ProgState.runningFlag = false;
-        Spring.ProgState.resetTime = Date.now() - Spring.ProgState.startTime;
+        disableSliders();  // in pause state sliders must not be changed
+        $("#mode-select").prop('disabled', true);
+        Spring.Prog.state = Spring.Prog.PAUSE;
+        $(this).prev().button( "option", "label", "Start" );
+        $(this).prev().button( "option", "icons", { primary: "ui-icon-play"});
     });
 
-    // init sliders
+    //* init sliders
     $("#eigenfrequency-slider").slider({
         value: Spring.dyn.w0,
         min: 0.1,
@@ -71,16 +85,19 @@ $(function() {
             $("#initveloc-slider").slider("option", "min", Spring.Consts.springLen * ui.value * -0.4);
             $("#initveloc-slider").slider("option", "max", Spring.Consts.springLen * ui.value * 0.4);
 
-            if ($("#initveloc-slider").slider("option","value") > $("#initveloc-slider").slider("option","max")) {
+            if ($("#initveloc-slider").slider("option","value") >
+                $("#initveloc-slider").slider("option","max")) {
 
-                $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","max"));
+                $("#initveloc-slider").slider("option","value",
+                                              $("#initveloc-slider").slider("option","max"));
             }
-            else if ($("#initveloc-slider").slider("option","value") < $("#initveloc-slider").slider("option","min")) {
-
-                $("#initveloc-slider").slider("option","value",$("#initveloc-slider").slider("option","min"));
+            else if ($("#initveloc-slider").slider("option","value") <
+                     $("#initveloc-slider").slider("option","min")) {
+                $("#initveloc-slider").slider("option","value",
+                                              $("#initveloc-slider").slider("option","min"));
             }
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#eigenfrequency").val($("#eigenfrequency-slider").slider("value"));
@@ -94,7 +111,7 @@ $(function() {
             $("#damping").val(ui.value);
             Spring.dyn.d = ui.value;
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#damping").val($("#damping-slider").slider("value"));
@@ -108,7 +125,7 @@ $(function() {
             $("#initpos").val(ui.value);
             Spring.dyn.y0 = ui.value;
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#initpos").val($("#initpos-slider").slider("value"));
@@ -122,7 +139,7 @@ $(function() {
             $("#initveloc").val(ui.value);
             Spring.dyn.v0 = ui.value;
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#initveloc").val($("#initveloc-slider").slider("value"));
@@ -137,7 +154,7 @@ $(function() {
             Spring.Consts.bigWheelR = ui.value;
             Spring.dyn.u0 = ui.value;
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#extforce-amp").val($("#extforce-amp-slider").slider("value"));
@@ -151,16 +168,45 @@ $(function() {
             $("#extforce-freq").val(ui.value);
             Spring.dyn.we = ui.value;
             Spring.Graphs.update();
-            Spring.redraw(Spring.ProgState.resetTime/1000);
+            Spring.redraw(Spring.Prog.getSimTime());
         }
     });
     $("#extforce-freq").val($("#extforce-freq-slider").slider("value"));
+
+
+    function enableSliders() {
+        $("#eigenfrequency-slider").slider("enable");
+        $("#damping-slider").slider("enable");
+        $("#extforce-amp-slider").slider("enable");
+        if(Spring.dyn.mode === Spring.dyn.SINE_RESP) {
+            $("#initpos-slider").slider("enable");
+            $("#initveloc-slider").slider("enable");
+            $("#extforce-freq-slider").slider("enable");
+        } else {
+            $("#initpos-slider").slider("disable");
+            $("#initveloc-slider").slider("disable");
+            $("#extforce-freq-slider").slider("disable");
+        }
+    }
+
+    function disableSliders() {
+        $("#eigenfrequency-slider").slider("disable");
+        $("#damping-slider").slider("disable");
+        $("#initpos-slider").slider("disable");
+        $("#initveloc-slider").slider("disable");
+        $("#extforce-amp-slider").slider("disable");
+        $("#extforce-freq-slider").slider("disable");
+    }
+
+
+    //* Freqdomain buttons
 
     $("#freqdomain-mag-phase").buttonset();
     $("#freqdomain-mag").click(function() {
         $("#freqdomain-mag-db").button("enable");
         $("#freqDomainPhaseGraph").hide();
-        $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ? "Db" : "")+"Graph").show();
+        $("#freqDomainMag"+(($("#freqdomain-mag-db").prop("checked") === true) ?
+                            "Db" : "")+"Graph").show();
         Spring.Graphs.needUpdate = true;
     });
     $("#freqdomain-phase").click(function() {
@@ -183,33 +229,112 @@ $(function() {
 
     // $("#timedomain-trace").prop("checked") = true;
     $("#timedomain-trace").button().click(function() {
-        Spring.ProgState.timeDomainTrace = $(this).prop("checked");
+        Spring.Prog.timeDomainTrace = $(this).prop("checked");
     });
 
     // Disable all sliders for the first time
     disableSliders();
+    $("#mode-select").prop('disabled', true);
     var canvas = document.getElementById("mycanvas");
     var divcanvas = $("#canvas-container");
 
     canvas.width = divcanvas.width();
     canvas.height = divcanvas.height();
-    // resize_canvas();
+
+    //* Language
+    var lang_de = {
+        name: "Deutsch",
+        otherLang: "English",
+        largeOscErr: "Schwingung zu groß, Simulation unrealistisch!"
+    };
+    lang_de.text = {};
+    var lang_en = {
+        name: "English",
+        otherLang: "Deutsch",
+        largeOscErr: "Oscillation too large, Simulation unrealistic!"
+    };
+    lang_en.text = {};
+    function setText(id, txtde, txten) {
+        lang_de.text[id] = txtde;
+        lang_en.text[id] = txten;
+
+    }
+
+    setText("text-title", "Federpendel", "Spring Pendulum");
+    setText("text-parameters", "Parameter", "Parameters");
+    setText("text-initcondforce", "Anfangsbedingungen / Äußere Kraft",
+            "Initial Conditions / External Force");
+    setText("text-timedomain",
+            "Zeitbereich: " + $("#mode-select").find(":selected").text(),
+            "Time domain: " + $("#mode-select").find(":selected").text());
+    setText("text-freqdomain", "Frequenzbereich", "Frequency Domain");
+    setText("text-polezero", "Pol-Nullstellen-Diagramm", "Pole-Zero Map");
+    setText("text-eigenfreq", "Eigenfrequenz", "Eigenfrequency");
+    setText("text-damping", "Dämpfung", "Damping");
+    setText("text-impresp", "Impulsantwort", "Impulse Response");
+    setText("text-stepresp", "Sprungantwort", "Step Response");
+    setText("text-sineforceinitcond", "Sinuskraft und Anfangsbedingungen",
+            "Sine Force and Initial Conditions");
+    setText("text-initpos", "Anfangsposition", "Initial Position");
+    setText("text-initvel", "Anfangsgeschwindigkeit", "Initial Velocity");
+    setText("text-forceamp", "Amplitude der äußeren Kraft", "External Force's Amplitude");
+    setText("text-extforcefreq", "Frequenz der äußeren Kraft", "External Force's Frequency");
+    setText("text-mag", "Amp.", "Mag.");
+    setText("text-trace", "Spur", "Trace");
+    setText("text-headline-left", "Federpendel: " + $("#mode-select").find(":selected").text(),
+            "Spring Pendulum: " + $("#mode-select").find(":selected").text());
+
+
+    // this function sets the all text elements according to the chosen language.
+    function setLang() {
+
+        // first update text fields based on selected mode
+        var selId = $("#mode-select").find(":selected").attr("id");
+        setText("text-timedomain",
+            "Zeitbereich: " + lang_de.text[selId],
+            "Time domain: " + lang_en.text[selId]);
+        setText("text-headline-left",
+                "Federpendel: " + lang_de.text[selId],
+                "Spring Pendulum: " + lang_en.text[selId]);
+
+        // then loop over all ids to replace the text
+        for(var id in Spring.langObj.text) {
+            $("#"+id).text(Spring.langObj.text[id].toLocaleString());
+        }
+        // finally, set label of language button
+        // $('#button-lang').text(Spring.langObj.otherLang);
+        $('#button-lang').button("option", "label", Spring.langObj.otherLang);
+    }
+
+    $("#button-lang").button().click(function() {
+        Spring.langObj = (Spring.langObj === lang_de) ? lang_en : lang_de;
+        setLang();
+    });
+
+    // Initialization based on search string tag
+    if(window.location.search.localeCompare("?lang=en")===0) {
+        // if(window.location.hash.length == 3 &&
+       // window.location.hash.substring(1,3).toLocaleLowerCase() == "en")
+        Spring.langObj = lang_en;
+    }
+    else Spring.langObj = lang_de;
+    setLang();
+
+
+    $("#mode-select").click(function() {
+        var selId = $(this).find(":selected").attr("id");
+        if(selId  === "text-impresp") {
+            Spring.dyn.mode = Spring.dyn.IMP_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:true});
+        } else if (selId  === "text-stepresp") {
+            Spring.dyn.mode = Spring.dyn.STEP_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:false});
+        } else {
+            Spring.dyn.mode = Spring.dyn.SINE_RESP;
+            Spring.Graphs.timeDomainExtForceDelta.setProperty({visible:false});
+        }
+        setLang();
+        Spring.Graphs.needUpdate = true;
+        enableSliders();
+    });
 });
-
-function enableSliders() {
-    $("#eigenfrequency-slider").slider("enable");
-    $("#damping-slider").slider("enable");
-    $("#initpos-slider").slider("enable");
-    $("#initveloc-slider").slider("enable");
-    $("#extforce-amp-slider").slider("enable");
-    $("#extforce-freq-slider").slider("enable");
-}
-
-function disableSliders() {
-    $("#eigenfrequency-slider").slider("disable");
-    $("#damping-slider").slider("disable");
-    $("#initpos-slider").slider("disable");
-    $("#initveloc-slider").slider("disable");
-    $("#extforce-amp-slider").slider("disable");
-    $("#extforce-freq-slider").slider("disable");
-}

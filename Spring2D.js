@@ -22,9 +22,12 @@ Spring.drawMass = function(y, withLighSource) {
     ctx.arc(Spring.Consts.X, y, Spring.Consts.massRadius, 0, 2*Math.PI);
 
     if(withLighSource) {
-        var distML = Math.sqrt( (Spring.Consts.X-Spring.Consts.lightX)*(Spring.Consts.X-Spring.Consts.lightX) +
-                                (y-Spring.Consts.lightY)*(y-Spring.Consts.lightY));
-        var gradCenterX = Spring.Consts.X  - 0.5*Spring.Consts.massRadius*(Spring.Consts.X-Spring.Consts.lightX)/distML;
+        var distML =
+                Math.sqrt( (Spring.Consts.X-Spring.Consts.lightX)*
+                           (Spring.Consts.X-Spring.Consts.lightX) +
+                           (y-Spring.Consts.lightY)*(y-Spring.Consts.lightY));
+        var gradCenterX = Spring.Consts.X  -
+                0.5*Spring.Consts.massRadius*(Spring.Consts.X-Spring.Consts.lightX)/distML;
         var gradCenterY = y  - 0.5*Spring.Consts.massRadius*(y-Spring.Consts.lightY)/distML;
 
         var grad = ctx.createRadialGradient(gradCenterX, gradCenterY, 5,
@@ -41,11 +44,11 @@ Spring.drawMass = function(y, withLighSource) {
 
 /**
  * draw the entire antrieb.
- * @param {number} om angular frequency of turning wheels
  * @param {number} t current time
  * @param {number} yup vertical position of mount point of spring
 */
-Spring.drawAntrieb = function(om, t, yup) {
+Spring.drawAntrieb = function(t, yup) {
+    // Static part of the drawing
     var ctx = this.ctx;
     ctx.fillStyle = "rgba(60,10,10,0.8)";
     ctx.shadowColor = "rgba(60, 10, 10, 0.3)";
@@ -86,16 +89,29 @@ Spring.drawAntrieb = function(om, t, yup) {
     ctx.fill();
 
 
+    // Dynamic part:
+    var phi;
+    switch (Spring.dyn.mode) {
+    case Spring.dyn.IMP_RESP:
+        phi = 0;
+        break;
+    case Spring.dyn.STEP_RESP:
+        phi = 0;
+        phi = t>0 ? -1 : 0;//  + 2*Math.PI/2;
+        break;
+    default:  // SINE_RESP
+        phi = t>0 ? -Spring.dyn.we*t : 0;//  + 2*Math.PI/2;
+        break;
+    }
     var phase = Spring.Consts.bigWheelR / Spring.Consts.distWheels;
-    var dotX = bigWheelX - 0.8*Spring.Consts.bigWheelR*Math.sin(om * t - phase);
-    var dotY = bigWheelY - 0.8*Spring.Consts.bigWheelR*Math.cos(om * t - phase);
+    var dotX = bigWheelX - 0.8*Spring.Consts.bigWheelR*Math.sin(phi - phase);
+    var dotY = bigWheelY - 0.8*Spring.Consts.bigWheelR*Math.cos(phi - phase);
     ctx.beginPath();
     ctx.moveTo(dotX, dotY);
     ctx.arc(dotX, dotY, 4, 0, 2*Math.PI);
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fill();
 
-    var phi = om*t;//  + 2*Math.PI/2;
     var psi = (1-Math.cos(phi))/(Spring.Consts.distWheels/(0.8*Spring.Consts.bigWheelR) + Math.sin(phi));
     ctx.beginPath();
     ctx.moveTo(dotX, dotY);
@@ -112,9 +128,13 @@ Spring.drawAntrieb = function(om, t, yup) {
 /**
  * draw the spring.
  * @param {number} yup vertical position of upper spring end.
- * @param {number} yup vertical position of lower spring end.
+ * @param {number} ydown vertical position of lower spring end.
 */
 Spring.drawSpring = function(yup, ydown) {
+    if(ydown - Spring.Consts.windMinHeight * Spring.Consts.springN <= yup) {
+        alert(Spring.langObj.largeOscErr);
+    }
+
     var topRadius = 5;
     var y1 = yup + 1.5*topRadius;
     var springLen = ydown - y1;
@@ -139,7 +159,7 @@ Spring.drawSpring = function(yup, ydown) {
     ctx.moveTo(Spring.Consts.X, yup + topRadius/2);
     ctx.lineTo(Spring.Consts.X, y1);
 
-    var N = 150;   // Dieser Wert ist sehr kritisch fuer die Laufzeit
+    var N = 200;   // Dieser Wert ist sehr kritisch fuer die Laufzeit
     var om = 2*Math.PI/springLen*Spring.Consts.springN;
     for(var k=1; k<=N; ++k) {
         var d = k/N*springLen;
@@ -159,9 +179,9 @@ Spring.drawSpring = function(yup, ydown) {
 */
 Spring.drawTrace = function(func, t, strokeStyle) {
     var ctx = this.ctx;
-    var vx = 30;
+    var vx = 30;    // trace speed
     var N0 = 100;
-    var DeltaX = vx*t;
+    var DeltaX = vx*(t+ Spring.Prog.offset);
     var x = Spring.Consts.X - DeltaX;
     var dx, dt;
     if(x<0) {
@@ -172,8 +192,8 @@ Spring.drawTrace = function(func, t, strokeStyle) {
         dt = DeltaT/ N0;
     } else {
         dx = DeltaX / N0;
-        dt = t/N0;
-        t = 0;
+        dt = (t + Spring.Prog.offset)/N0;
+        t = - Spring.Prog.offset;
     }
     ctx.beginPath();
     ctx.moveTo(x, func(t));
@@ -188,26 +208,63 @@ Spring.drawTrace = function(func, t, strokeStyle) {
 
 
 /**
- * redraw everything at time t
+ * draw the trace of a delta function
+ * @param {number} height (in pixel) of delta peak
+ * @param {number} yOffset y coordinate of zero-line of delta function
  * @param {number} t current time
+ * @param {number} yup vertical position of upper spring end.
 */
-Spring.redraw = function(t) {
-    Spring.ctx.clearRect(0,Spring.Consts.ceilThickness, Spring.canvas.width,
-                         Spring.canvas.height-Spring.Consts.ceilThickness);
+Spring.drawDeltaTrace = function(height, yOffset, t, strokeStyle) {
+    var ctx = this.ctx;
+    var vx = 30;   // trace speed
+    var arrowLen = 5;
+    var DeltaX = vx*(t+ Spring.Prog.offset);
+    var peakX =  Spring.Consts.X - vx*t;  // peak position
+    var x = Spring.Consts.X - DeltaX;
+    var dx, dt;
+    if(x<0) {
+        x = 0;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x, yOffset);
+    ctx.lineTo(Spring.Consts.X, yOffset);
+    if(t > 0 && peakX > 0 && Spring.dyn.u0 > 0) {
+        // draw the delta peak
+        ctx.moveTo(peakX, yOffset);
+        ctx.lineTo(peakX, yOffset-height);
+        ctx.lineTo(peakX+arrowLen, yOffset-height+arrowLen);
+        ctx.moveTo(peakX, yOffset-height);
+        ctx.lineTo(peakX-arrowLen, yOffset-height+arrowLen);
+    }
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
+};
+
+/**
+ * redraw everything at time t
+*/
+Spring.redraw = function() {
+    var t = Spring.Prog.getSimTime();
+    var deltaForce = Spring.dyn.mode === Spring.dyn.IMP_RESP;
+    Spring.ctx.clearRect(0,0,Spring.ctx.canvas.width, Spring.ctx.canvas.height);
     var y = Spring.Consts.yMount + Spring.Consts.springLen - Spring.dyn.positionFunc(t);
     var yup = Spring.Consts.yMount - Spring.dyn.extForce(t);
 
-    Spring.drawAntrieb(-Spring.dyn.we, t, yup);
-    // outerRect();
+    Spring.drawAntrieb(t, yup);
     Spring.drawSpring(yup, y - Spring.Consts.massRadius);
     Spring.drawMass(y);
-    if(Spring.ProgState.timeDomainTrace) {
+    if(Spring.Prog.timeDomainTrace) {
         // draw trace in spring plot
         Spring.drawTrace(function(t) {return Spring.Consts.yMount + Spring.Consts.springLen -
                                       Spring.dyn.positionFunc(t);},
                          t, 'rgba(0,0,255, 0.6)');
-        Spring.drawTrace(function(t) {return Spring.Consts.yMount -
-                                      Spring.dyn.extForce(t);},
-                         t, 'rgba(255,0,0, 0.6)');
+        if(deltaForce) {
+            Spring.drawDeltaTrace(Spring.Consts.deltaHeight, Spring.Consts.yMount,
+                                  t, 'rgba(255,0,0, 0.6)');
+        } else {
+            Spring.drawTrace(function(t) {return Spring.Consts.yMount -
+                                          Spring.dyn.extForce(t);},
+                             t, 'rgba(255,0,0, 0.6)');
+        }
     }
-}
+};
